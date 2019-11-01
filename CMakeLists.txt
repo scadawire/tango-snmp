@@ -27,7 +27,6 @@ endif()
 
 find_dependencies()
 
-#add_subdirectory(src/ska/helloworld)
 add_subdirectory(src/apps)
 
 # Install cmake config + version + target files
@@ -43,8 +42,6 @@ write_basic_package_version_file(
   COMPATIBILITY
     AnyNewerVersion
 )
-
-#install(EXPORT helloworld-targets   FILE     HelloWorldTargets.cmake   DESTINATION     share/helloworld/cmake   COMPONENT     dev   NAMESPACE     helloworld:: )
 
 install(
     PROGRAMS

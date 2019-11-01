@@ -8,14 +8,3 @@ target_link_libraries(TangoSnmp netsnmp m tango omniDynamic4 COS4 omniORB4 omnit
 
 # Note: old Makefile used `net-snmp-config --libs` and `net-snmp-config --cflags` to get correct snmp settings.
 # I don't know how to do that kind of thing in cmake...
-
-#install (
-#    TARGETS
-#        TangoSnmp
-#    EXPORT
-#        tangosnmp-targets
-#    DESTINATION
-#        bin
-#)
-
-
