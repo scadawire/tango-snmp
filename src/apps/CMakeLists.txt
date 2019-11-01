@@ -1,14 +1,8 @@
-# add the executable
-add_executable (HelloWorld hello_world.cc)
-target_link_libraries (HelloWorld HelloClasses)
+add_executable (TangoSnmp TangoSnmp.cpp TangoSnmpClass.cpp TangoSnmpStateMachine.cpp TangoSnmpDynAttrUtils.cpp ClassFactory.cpp main.cpp)
+target_include_directories(TangoSnmp PUBLIC .)
+target_include_directories(TangoSnmp PUBLIC /usr/include/tango)
 
-install (
-  TARGETS
-    HelloWorld
-  EXPORT
-    helloworld-targest
-  DESTINATION
-    bin
-)
+target_link_libraries(TangoSnmp netsnmp m tango omniDynamic4 COS4 omniORB4 omnithread log4tango zmq dl pthread stdc++)
 
-add_test(NAME HelloWorldExec COMMAND HelloWorld)
+# Note: old Makefile used `net-snmp-config --libs` and `net-snmp-config --cflags` to get correct snmp settings.
+# I don't know how to do that kind of thing in cmake...
