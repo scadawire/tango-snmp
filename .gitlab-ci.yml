@@ -17,7 +17,7 @@ image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
 #image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
 services: 
     - nexus.engageska-portugal.pt/ska-docker/tango-cpp
-    - nexus.engageska-portugal.pt/ska-docker/tango-pogo
+#    - nexus.engageska-portugal.pt/ska-docker/tango-pogo
 
 variables:
   # Needed if you want automatic submodule checkout
@@ -52,11 +52,11 @@ build_release:
     #  extends: .common
   stage: build
   script:
-      #- mkdir build
-      #- cd build
-      #- cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cd src/apps
-    - make
+      - mkdir build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE=Release
+      #    - cd src/apps
+      #- make
   artifacts:
     paths:
       - build
