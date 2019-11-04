@@ -15,10 +15,12 @@
 # how to combine these two docker images? 
 image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
 #image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
-services: 
-    - nexus.engageska-portugal.pt/ska-docker/tango-dependencies
-    - nexus.engageska-portugal.pt/ska-docker/tango-cpp
-#    - nexus.engageska-portugal.pt/ska-docker/tango-pogo
+#services: 
+### note: no point including tango-dependencies as apt install libtango-dev grabs it all regardless
+### none of these seem to be of any use at all here
+    #- nexus.engageska-portugal.pt/ska-docker/tango-dependencies
+    #- nexus.engageska-portugal.pt/ska-docker/tango-cpp
+    #- nexus.engageska-portugal.pt/ska-docker/tango-pogo
 
 variables:
   # Needed if you want automatic submodule checkout
@@ -128,6 +130,7 @@ test_installation:
     - build_release
   script:
     - cd build
+    - ls -R
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - make install
 #   - cd ../examples/helloworld-user
