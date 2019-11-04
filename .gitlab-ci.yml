@@ -20,6 +20,7 @@ variables:
 
   # AB - trying to see if this will run on default GitLab runners
   #.common: {tags: [engageska, docker]}
+  .common: {}
 
 stages:
   - build
