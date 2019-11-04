@@ -17,6 +17,7 @@ image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
 #image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
 services: 
     - nexus.engageska-portugal.pt/ska-docker/tango-cpp
+    - nexus.engageska-portugal.pt/ska-docker/tango-pogo
 
 variables:
   # Needed if you want automatic submodule checkout
