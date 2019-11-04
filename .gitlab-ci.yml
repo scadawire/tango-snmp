@@ -20,7 +20,7 @@ variables:
 
   # AB - trying to see if this will run on default GitLab runners
   #.common: {tags: [engageska, docker]}
-  .common: {}
+  # also commented out all "extends common" lines below.
 
 stages:
   - build
@@ -29,7 +29,7 @@ stages:
   - pages
 
 build_debug:
-  extends: .common
+    #  extends: .common
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
@@ -43,7 +43,7 @@ build_debug:
       - build
 
 build_release:
-  extends: .common
+    #  extends: .common
   stage: build
   script:
     - mkdir build
@@ -55,7 +55,7 @@ build_release:
       - build
 
 build_export_compile_commands:
- extends: .common
+    # extends: .common
  stage: build
  script:
     - rm -rf build && mkdir build
@@ -66,7 +66,7 @@ build_export_compile_commands:
       - build
 
 lint_clang_tidy:
-  extends: .common
+    #  extends: .common
   stage: linting
   dependencies:
     - build_export_compile_commands
@@ -75,7 +75,7 @@ lint_clang_tidy:
     - run-clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,google-*'
 
 lint_iwyu:
-  extends: .common
+    #  extends: .common
   stage: linting
   dependencies:
     - build_export_compile_commands
@@ -84,7 +84,7 @@ lint_iwyu:
     - iwyu_tool -p .
 
 lint_cppcheck:
-  extends: .common
+    #  extends: .common
   stage: linting
   dependencies:
     - build_export_compile_commands
@@ -93,7 +93,7 @@ lint_cppcheck:
     - cppcheck --error-exitcode=1 --project=compile_commands.json -q --std=c++14 -i $PWD/../external -i $PWD/../src/ska/helloworld/test
 
 test:
-  extends: .common
+    #  extends: .common
   stage: test
   dependencies:
     - build_debug
@@ -110,7 +110,7 @@ test:
       junit: build/ctest.xml
 
 test_installation:
-  extends: .common
+    #  extends: .common
   stage: test
   dependencies:
     - build_release
@@ -126,7 +126,7 @@ test_installation:
     - make all
 
 test_as_subproject:
-  extends: .common
+    #  extends: .common
   stage: test
   script:
     - cp -r examples/helloworld-user ..
@@ -141,7 +141,7 @@ test_as_subproject:
 # A job that runs the tests under valgrid
 # It might take a while, so not always run by default
 test_memcheck:
-  extends: .common
+    #  extends: .common
   stage: test
   dependencies:
     - build_debug
@@ -155,7 +155,7 @@ test_memcheck:
     - schedules
 
 pages:
-  extends: .common
+    #  extends: .common
   stage: pages
   dependencies:
     - test
