@@ -53,7 +53,7 @@ build_release:
     #  extends: .common
   stage: build
   before_script:
-      - apt update && apt install -y libsnmp-dev
+      - apt update && apt install -y libsnmp-dev libtango-dev
   script:
       - mkdir build
       - cd build
