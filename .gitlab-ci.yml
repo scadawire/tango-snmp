@@ -58,8 +58,8 @@ build_release:
       - mkdir build
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE=Release
-      #    - cd src/apps
-      #- make
+      - cd src/apps
+      - make
   artifacts:
     paths:
       - build
