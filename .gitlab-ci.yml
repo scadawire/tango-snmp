@@ -29,69 +29,70 @@ stages:
   - test
   - pages
 
-build_debug:
-    #  extends: .common
-  stage: build
-  # instead of calling g++ directly you can also use some build toolkit like make
-  # install the necessary build tools when needed
-  script:
-    - mkdir build
-    - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-coverage" -DCMAKE_EXE_LINKER_FLAGS="-coverage"
-    - make
-  artifacts:
-    paths:
-      - build
+#build_debug:
+#      extends: .common
+#  stage: build
+#  # instead of calling g++ directly you can also use some build toolkit like make
+#  # install the necessary build tools when needed
+#  script:
+#    - mkdir build
+#    - cd build
+#    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-coverage" -DCMAKE_EXE_LINKER_FLAGS="-coverage"
+#    - make
+#  artifacts:
+#    paths:
+#      - build
 
 build_release:
     #  extends: .common
   stage: build
   script:
-    - mkdir build
-    - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release
+      #- mkdir build
+      #- cd build
+      #- cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cd src/apps
     - make
   artifacts:
     paths:
       - build
 
-build_export_compile_commands:
-    # extends: .common
- stage: build
- script:
-    - rm -rf build && mkdir build
-    - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=clang++
- artifacts:
-    paths:
-      - build
+#build_export_compile_commands:
+#    # extends: .common
+# stage: build
+# script:
+#    - rm -rf build && mkdir build
+#    - cd build
+#      #- cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=clang++
+# artifacts:
+#    paths:
+#      - build
 
-lint_clang_tidy:
-    #  extends: .common
-  stage: linting
-  dependencies:
-    - build_export_compile_commands
-  script:
-    - cd build
-    - run-clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,google-*'
+#lint_clang_tidy:
+#    #  extends: .common
+#  stage: linting
+#  dependencies:
+#    - build_export_compile_commands
+#  script:
+#    - cd build
+#    - run-clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,google-*'
 
-lint_iwyu:
-    #  extends: .common
-  stage: linting
-  dependencies:
-    - build_export_compile_commands
-  script:
-    - cd build
-    - iwyu_tool -p .
+#lint_iwyu:
+#    #  extends: .common
+#  stage: linting
+#  dependencies:
+#    - build_export_compile_commands
+#  script:
+#    - cd build
+#    - iwyu_tool -p .
 
-lint_cppcheck:
-    #  extends: .common
-  stage: linting
-  dependencies:
-    - build_export_compile_commands
-  script:
-    - cd build
-    - cppcheck --error-exitcode=1 --project=compile_commands.json -q --std=c++14 -i $PWD/../external -i $PWD/../src/ska/helloworld/test
+#lint_cppcheck:
+#    #  extends: .common
+#  stage: linting
+#  dependencies:
+#    - build_export_compile_commands
+#  script:
+#    - cd build
+#    - cppcheck --error-exitcode=1 --project=compile_commands.json -q --std=c++14 -i $PWD/../external -i $PWD/../src/ska/helloworld/test
 
 test:
     #  extends: .common
