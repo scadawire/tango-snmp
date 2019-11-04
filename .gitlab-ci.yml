@@ -98,7 +98,8 @@ test:
     #  extends: .common
   stage: test
   dependencies:
-    - build_debug
+      #- build_debug
+      - build_release
   script:
     - cd build
     - ctest -T test --no-compress-output
@@ -142,19 +143,19 @@ test_as_subproject:
 
 # A job that runs the tests under valgrid
 # It might take a while, so not always run by default
-test_memcheck:
-    #  extends: .common
-  stage: test
-  dependencies:
-    - build_debug
-  before_script:
-    - apt update && apt install -y valgrind
-  script:
-    - cd build
-    - ctest -T memcheck
-  only:
-    - tags
-    - schedules
+#test_memcheck:
+#    #  extends: .common
+#  stage: test
+#  dependencies:
+#    - build_debug
+#  before_script:
+#    - apt update && apt install -y valgrind
+#  script:
+#    - cd build
+#    - ctest -T memcheck
+#  only:
+#    - tags
+#    - schedules
 
 pages:
     #  extends: .common
