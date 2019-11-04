@@ -16,6 +16,7 @@
 image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
 #image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
 services: 
+    - nexus.engageska-portugal.pt/ska-docker/tango-dependencies
     - nexus.engageska-portugal.pt/ska-docker/tango-cpp
 #    - nexus.engageska-portugal.pt/ska-docker/tango-pogo
 
@@ -51,6 +52,8 @@ stages:
 build_release:
     #  extends: .common
   stage: build
+  before_script:
+      - apt update && apt install libsnmp-dev
   script:
       - mkdir build
       - cd build
