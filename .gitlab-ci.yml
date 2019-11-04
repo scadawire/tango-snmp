@@ -11,8 +11,12 @@
 #
 # For details see https://github.com/ska-telescope/cpp_build_base
 #
-#image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+
+# how to combine these two docker images? 
+image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+#image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+services: 
+    - nexus.engageska-portugal.pt/ska-docker/tango-cpp
 
 variables:
   # Needed if you want automatic submodule checkout
