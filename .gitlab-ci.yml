@@ -53,7 +53,9 @@ build_release:
     #  extends: .common
   stage: build
   before_script:
-      - apt update && apt install -y libsnmp-dev libtango-dev
+      - export DEBIAN_FRONTEND=noninteractive
+      - apt update
+      - apt install -y libsnmp-dev libtango-dev
   script:
       - mkdir build
       - cd build
