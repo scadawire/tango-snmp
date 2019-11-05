@@ -132,7 +132,7 @@ test_installation:
     - cd build
     - ls -R
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
-    - make install
+    - make install --trace
 #   - cd ../examples/helloworld-user
 #    - if [ -d build ]; then rm -rf build; fi 
 #    - mkdir build
