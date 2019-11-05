@@ -131,17 +131,17 @@ test_installation:
   script:
     - cd build
     - make --version
-    # trying make install before the extra cmake run for lulz
     # make will try (and fail) to rebuild because the source is newer than the build
     # so we make the build look nice and fresh
     - find . -type f -exec touch {} +  
-    - make install --trace
     # this ls is for CI debugging only
-    - ls .. -laR > ls_full.txt
+    - ls .. -laR > ls_before_cmake.txt
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - find . -type f -exec touch {} +  
+    - find . -type f -name '*.make' -exec touch {} +  
     - find . -type f -name '*.o' -exec touch {} +  
     - touch bin/TangoSnmp
+    - ls .. -laR > ls_after_cmake.txt
     - make install --trace
   # artifacts for CI debugging
   artifacts:
