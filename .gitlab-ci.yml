@@ -134,6 +134,7 @@ test_installation:
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - make install --trace
   artifacts:
+      when: always
       paths:
           - build
 #   - cd ../examples/helloworld-user
