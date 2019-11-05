@@ -130,6 +130,7 @@ test_installation:
     - build_release
   script:
     - cd build
+    - make --version
     # make will try (and fail) to rebuild because the source is newer than the build
     # so we make the build look nice and fresh
     - find . -type f -exec touch {} +  
