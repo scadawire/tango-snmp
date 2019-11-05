@@ -129,8 +129,8 @@ test_installation:
   dependencies:
     - build_release
   script:
+    - ls -laR > build/full_ls.txt
     - cd build
-    - ls -R
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - make install --trace
 #   - cd ../examples/helloworld-user
@@ -139,6 +139,10 @@ test_installation:
 #    - cd build
 #    - cmake .. -DCMAKE_PREFIX_PATH=/opt
 #    - make all
+#    artifacts added for debugging...
+    artifacts:
+        paths:
+            - build
 
 #test_as_subproject:
 #    #  extends: .common
