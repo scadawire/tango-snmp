@@ -147,7 +147,7 @@ test_installation:
     - touch bin/TangoSnmp
     - ls .. -laR > ls_after_cmake.txt
     - make install --trace -d --touch
-     # artifacts for CI debugging
+    # artifacts for CI debugging
   artifacts:
       when: always
       paths:
