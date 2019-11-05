@@ -129,9 +129,8 @@ test_installation:
   dependencies:
     - build_release
   script:
-    - cd
-    - ls -laR > build/full_ls.txt
     - cd build
+    - ls .. -laR > build/full_ls.txt
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - make install --trace
       #   - cd ../examples/helloworld-user
