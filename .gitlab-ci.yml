@@ -133,8 +133,7 @@ test_installation:
     - make --version
     # make will try (and fail) to rebuild because the source is newer than the build
     # so we make the build look nice and fresh
-    - find . -type f -name '*.o' -exec touch {} +  
-    - touch bin/TangoSnmp
+    - find . -type f -exec touch {} +  
     # this ls is for CI debugging only
     - ls .. -laR > ls_full.txt
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
