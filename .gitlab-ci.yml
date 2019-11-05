@@ -133,13 +133,13 @@ test_installation:
     - cd build
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - make install --trace
-#   - cd ../examples/helloworld-user
-#    - if [ -d build ]; then rm -rf build; fi 
-#    - mkdir build
-#    - cd build
-#    - cmake .. -DCMAKE_PREFIX_PATH=/opt
-#    - make all
-#    artifacts added for debugging...
+      #   - cd ../examples/helloworld-user
+      #    - if [ -d build ]; then rm -rf build; fi 
+      #    - mkdir build
+      #    - cd build
+      #    - cmake .. -DCMAKE_PREFIX_PATH=/opt
+      #    - make all
+      #    artifacts added for debugging...
     artifacts:
         paths:
             - build
