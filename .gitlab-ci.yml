@@ -140,9 +140,10 @@ test_installation:
     - find . -type f -exec touch {} +  
     - find . -type f -name '*.make' -exec touch {} +  
     - find . -type f -name '*.o' -exec touch {} +  
+    - find . -type f -name 'link.txt' -exec touch {} +  
     - touch bin/TangoSnmp
     - ls .. -laR > ls_after_cmake.txt
-    - make install --trace
+    - make install --trace -d
   # artifacts for CI debugging
   artifacts:
       when: always
