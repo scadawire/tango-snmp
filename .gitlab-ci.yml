@@ -137,6 +137,7 @@ test_installation:
     # this ls is for CI debugging only
     - ls .. -laR > ls_full.txt
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
+    - find . -type f -exec touch {} +  
     - find . -type f -name '*.o' -exec touch {} +  
     - touch bin/TangoSnmp
     - make install --trace
