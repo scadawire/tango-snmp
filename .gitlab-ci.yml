@@ -130,9 +130,12 @@ test_installation:
     - build_release
   script:
     - cd build
-    - ls -R
+    - ls .. -laR > ls_full.txt
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - make install --trace
+  artifacts:
+      paths:
+          - build
 #   - cd ../examples/helloworld-user
 #    - if [ -d build ]; then rm -rf build; fi 
 #    - mkdir build
