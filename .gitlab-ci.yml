@@ -130,9 +130,14 @@ test_installation:
     - build_release
   script:
     - cd build
+    # make will try (and fail) to rebuild because the source is newer than the build
+    # so we make the build look nice and fresh
+    - find . -type f -exec touch {} +  
+    # this ls is for CI debugging only
     - ls .. -laR > ls_full.txt
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
     - make install --trace
+  # artifacts for CI debugging
   artifacts:
       when: always
       paths:
