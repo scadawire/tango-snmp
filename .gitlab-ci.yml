@@ -63,6 +63,9 @@ build_release:
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE=Release
       - make
+      # the below is taken from the test_install job, which I can't get to work...
+      - cmake . -DCMAKE_INSTALL_PREFIX=/opt
+      - make install
   artifacts:
     paths:
       - build
@@ -123,32 +126,32 @@ test:
     reports:
       junit: build/ctest.xml
 
-test_installation:
-    #  extends: .common
-  stage: test
-  dependencies:
-    - build_release
-  script:
-    - cd build
-    - make --version
-    # make will try (and fail) to rebuild because the source is newer than the build
-    # so we make the build look nice and fresh
-    - find . -type f -exec touch {} +  
-    # this ls is for CI debugging only
-    - ls .. -laR > ls_before_cmake.txt
-    - cmake . -DCMAKE_INSTALL_PREFIX=/opt
-    - find . -type f -exec touch {} +  
-    - find . -type f -name '*.make' -exec touch {} +  
-    - find . -type f -name '*.o' -exec touch {} +  
-    - find . -type f -name 'link.txt' -exec touch {} +  
-    - touch bin/TangoSnmp
-    - ls .. -laR > ls_after_cmake.txt
-    - make install --trace -d
-  # artifacts for CI debugging
-  artifacts:
-      when: always
-      paths:
-          - build
+#test_installation:
+#    #  extends: .common
+#  stage: test
+#  dependencies:
+#    - build_release
+#  script:
+#    - cd build
+#    - make --version
+#    # make will try (and fail) to rebuild because the source is newer than the build
+#    # so we make the build look nice and fresh
+#    - find . -type f -exec touch {} +  
+#    # this ls is for CI debugging only
+#    - ls .. -laR > ls_before_cmake.txt
+#    - cmake . -DCMAKE_INSTALL_PREFIX=/opt
+#    - find . -type f -exec touch {} +  
+#    - find . -type f -name '*.make' -exec touch {} +  
+#    - find . -type f -name '*.o' -exec touch {} +  
+#    - find . -type f -name 'link.txt' -exec touch {} +  
+#    - touch bin/TangoSnmp
+#    - ls .. -laR > ls_after_cmake.txt
+#    - make install --trace -d
+#     # artifacts for CI debugging
+#  artifacts:
+#      when: always
+#      paths:
+#          - build
 #   - cd ../examples/helloworld-user
 #    - if [ -d build ]; then rm -rf build; fi 
 #    - mkdir build
