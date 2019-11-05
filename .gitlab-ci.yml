@@ -131,8 +131,7 @@ test_installation:
   script:
     - cd build
     - make --version
-    # trying make install without the extra cmake run for lulz
-    - make install --trace
+    # trying make install before the extra cmake run for lulz
     # make will try (and fail) to rebuild because the source is newer than the build
     # so we make the build look nice and fresh
     - find . -type f -exec touch {} +  
