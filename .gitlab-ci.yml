@@ -129,6 +129,7 @@ test_installation:
   dependencies:
     - build_release
   script:
+    - cd
     - ls -laR > build/full_ls.txt
     - cd build
     - cmake . -DCMAKE_INSTALL_PREFIX=/opt
