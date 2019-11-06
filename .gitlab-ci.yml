@@ -56,8 +56,15 @@ build_release:
   stage: build
   before_script:
       - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      #- export DEBIAN_FRONTEND=noninteractive
-      #- apt update
+      - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - export DEBIAN_FRONTEND=noninteractive
+      - apt update
+      - apt install -y libsnmp-dev
+      # tango-cpp image does not have cmake
+      - apt install -y cmake
+      # cpp_build_base image does not have the tango libraries we need
       #- apt install -y libsnmp-dev libtango-dev
   script:
       - mkdir build
