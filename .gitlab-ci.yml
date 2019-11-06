@@ -13,8 +13,8 @@
 #
 
 # how to combine these two docker images? 
-image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-#image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+#image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
 #services: 
     #- nexus.engageska-portugal.pt/ska-docker/tango-dependencies
     #- nexus.engageska-portugal.pt/ska-docker/tango-cpp
@@ -45,12 +45,13 @@ build_release:
       - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - export DEBIAN_FRONTEND=noninteractive
-      - apt update
-      - apt install -y libsnmp-dev
-      # tango-cpp image does not have cmake... but "apt update" doesn't even have permission to run on tango-cpp image.
-      #- apt install -y cmake
+      # don't need sudo for cpp_build_base, do need it for tango-cpp
+      - sudo apt update
+      - sudo apt install -y libsnmp-dev
+      # tango-cpp image does not have cmake
+      - apt install -y cmake
       # cpp_build_base image does not have the tango libraries we need
-      - apt install -y libtango-dev
+      #- apt install -y libtango-dev
   script:
       - mkdir build
       - cd build
@@ -81,6 +82,10 @@ test_tango:
   script:
       - cd build/bin
       - ./TangoSnmp test
+      # at this point we seem to be moving into Docker compose territory,
+      # as we require a tango database too...
+      # csp-lmc-prototype has a Makefile which looks to do the right things.
+      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 
 ###################################################
