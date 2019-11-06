@@ -76,8 +76,8 @@ test_tango:
       - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - export DEBIAN_FRONTEND=noninteractive
-      - apt update
-      - apt install -y libsnmp-dev
+      - sudo apt update
+      - sudo apt install -y libsnmp-dev
   script:
       - cd build/bin
       - ./TangoSnmp test
