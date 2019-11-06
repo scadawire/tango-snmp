@@ -55,10 +55,9 @@ build_release:
     #  extends: .common
   stage: build
   before_script:
-      - echo "Looking for tango.h"
-      - find / -iname 'tango.h' 2>/dev/null
-      - export DEBIAN_FRONTEND=noninteractive
-      - apt update
+      - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      #- export DEBIAN_FRONTEND=noninteractive
+      #- apt update
       #- apt install -y libsnmp-dev libtango-dev
   script:
       - mkdir build
