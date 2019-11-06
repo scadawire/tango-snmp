@@ -69,6 +69,15 @@ test_tango:
   stage: test
   dependencies:
       - build_release
+  before_script:
+      # these finds used for figuring out what is installed in each docker image
+      - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - export DEBIAN_FRONTEND=noninteractive
+      - apt update
+      - apt install -y libsnmp-dev
   script:
       - cd build/bin
       - ./TangoSnmp test
