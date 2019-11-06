@@ -13,11 +13,9 @@
 #
 
 # how to combine these two docker images? 
-#image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
-### note: no point including tango-dependencies as apt install libtango-dev grabs it all regardless
-### none of these seem to be of any use at all here, as far as I can tell none include libtango-dev
-services: 
+image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+#image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+#services: 
     #- nexus.engageska-portugal.pt/ska-docker/tango-dependencies
     #- nexus.engageska-portugal.pt/ska-docker/tango-cpp
     #- nexus.engageska-portugal.pt/ska-docker/tango-pogo
@@ -37,6 +35,51 @@ stages:
   - test
   - pages
 
+build_release:
+    #  extends: .common
+  stage: build
+  before_script:
+      # these finds were used for figuring out what is installed in which docker image
+      - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - export DEBIAN_FRONTEND=noninteractive
+      - apt update
+      - apt install -y libsnmp-dev
+      # tango-cpp image does not have cmake... but "apt update" doesn't even have permission to run on tango-cpp image.
+      #- apt install -y cmake
+      # cpp_build_base image does not have the tango libraries we need
+      - apt install -y libtango-dev
+  script:
+      - mkdir build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE=Release
+      - make
+      # the below is taken from the test_install job, I can't get it to work in that job...
+      # (it tries to rebuild, but lacking the headers it can't - but it shouldn't need to rebuild...)
+      - cmake . -DCMAKE_INSTALL_PREFIX=/opt
+      - make install
+  artifacts:
+    paths:
+      - build
+
+test_tango:
+  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+  stage: test
+  dependencies:
+      - build_release
+  script:
+      - cd build/bin
+      - ./TangoSnmp test
+
+
+###################################################
+# Below are parts of the template that don't work  / don't do anything useful
+# (I haven't tried to make them work yet)
+#
+##################################################
+
 #build_debug:
 #      extends: .common
 #  stage: build
@@ -51,33 +94,25 @@ stages:
 #    paths:
 #      - build
 
-build_release:
+test:
     #  extends: .common
-  stage: build
-  before_script:
-      - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - export DEBIAN_FRONTEND=noninteractive
-      - apt update
-      - apt install -y libsnmp-dev
-      # tango-cpp image does not have cmake
-      - apt install -y cmake
-      # cpp_build_base image does not have the tango libraries we need
-      #- apt install -y libsnmp-dev libtango-dev
+  stage: test
+  dependencies:
+      #- build_debug
+      - build_release
   script:
-      - mkdir build
-      - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=Release
-      - make
-      # the below is taken from the test_install job, which I can't get to work...
-      - cmake . -DCMAKE_INSTALL_PREFIX=/opt
-      - make install
+    - cd build
+    - ctest -T test --no-compress-output
+  after_script:
+    - cd build
+    - ctest2junit > ctest.xml
   artifacts:
     paths:
-      - build
+      - build/
+    reports:
+      junit: build/ctest.xml
 
+#
 #build_export_compile_commands:
 #    # extends: .common
 # stage: build
@@ -115,25 +150,6 @@ build_release:
 #  script:
 #    - cd build
 #    - cppcheck --error-exitcode=1 --project=compile_commands.json -q --std=c++14 -i $PWD/../external -i $PWD/../src/ska/helloworld/test
-
-test:
-    #  extends: .common
-  stage: test
-  dependencies:
-      #- build_debug
-      - build_release
-  script:
-    - cd build
-    - ctest -T test --no-compress-output
-  after_script:
-    - cd build
-    - ctest2junit > ctest.xml
-  artifacts:
-    paths:
-      - build/
-    reports:
-      junit: build/ctest.xml
-
 #test_installation:
 #    #  extends: .common
 #  stage: test
