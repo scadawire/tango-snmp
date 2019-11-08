@@ -49,7 +49,7 @@ build_release:
       - sudo apt update
       - sudo apt install -y libsnmp-dev
       # tango-cpp image does not have cmake
-      - apt install -y cmake
+      - sudo apt install -y cmake
       # cpp_build_base image does not have the tango libraries we need
       #- apt install -y libtango-dev
   script:
