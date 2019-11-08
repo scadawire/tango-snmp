@@ -1,0 +1,39 @@
+version: '2.2'
+
+services:
+  dsconfig:
+    image: nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:latest
+    network_mode: ${NETWORK_MODE}
+    container_name: ${CONTAINER_NAME_PREFIX}dsconfig
+    depends_on:
+      - databaseds
+    environment:
+      - TANGO_HOST=${TANGO_HOST}
+    command: >
+      sh -c "wait-for-it.sh ${TANGO_HOST} --timeout=60 --strict --
+             ls -la dsconfig &&
+             json2tango -w -a -u dsconfig/db.json && sleep infinity"
+    volumes:
+      - ./dsconfig:/dsconfig
+
+  ds:
+    image: ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tangosnmp:latest
+    network_mode: ${NETWORK_MODE}
+    container_name: ${CONTAINER_NAME_PREFIX}ds
+    depends_on:
+      - dsconfig
+      - rsyslog
+    environment:
+      - TANGO_HOST=${TANGO_HOST}
+    command: >
+      sh -c "wait-for-it.sh ${TANGO_HOST} --timeout=30 --strict --
+             retry --max=5 && \
+             if [ -d /root/.snmp/mibs ]; then echo 'found mibs' && ls -la /root/.snmp/mibs ; else echo 'no mibs!'; fi && \
+             TangoSnmp andrew"
+    volumes_from:
+      - rsyslog:rw
+
+  rsyslog: 
+    image: jumanjiman/rsyslog
+    container_name: ${CONTAINER_NAME_PREFIX}rsyslog
+    network_mode: ${NETWORK_MODE}
