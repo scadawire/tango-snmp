@@ -33,6 +33,7 @@ stages:
   - build
   - linting
   - test
+  - publish
   - pages
 
 build_release:
