@@ -47,10 +47,10 @@ build_release:
       - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - export DEBIAN_FRONTEND=noninteractive
       # don't need sudo for cpp_build_base, do need it for tango-cpp
-      - sudo apt update -q
-      - sudo apt install -y -q libsnmp-dev
-      # tango-cpp image does not have cmake
-      - sudo apt install -y -q cmake g++
+      - sudo apt update -qq
+      - sudo apt install -y -qq libsnmp-dev
+      # tango-cpp image does not have cmake (or a c++ compiler)
+      - sudo apt install -y -qq cmake g++
       # cpp_build_base image does not have the tango libraries we need
       #- apt install -y libtango-dev
   script:
@@ -60,7 +60,7 @@ build_release:
       - make
       # the below is taken from the test_install job, I can't get it to work in that job...
       # (it tries to rebuild, but lacking the headers it can't - but it shouldn't need to rebuild...)
-      - cmake . -DCMAKE_INSTALL_PREFIX=/opt
+      - cmake . -DCMAKE_INSTALL_PREFIX=../docker
       - make install
   artifacts:
     paths:
