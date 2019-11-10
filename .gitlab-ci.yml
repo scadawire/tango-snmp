@@ -82,11 +82,22 @@ test_tango:
       - sudo apt install -y libsnmp-dev
   script:
       - cd build/bin
-      - ./TangoSnmp test
+      - ./TangoSnmp test || echo 'executiion failed, as expected...'
       # at this point we seem to be moving into Docker compose territory,
       # as we require a tango database too...
       # csp-lmc-prototype has a Makefile which looks to do the right things.
       # (well, it gets stuck on some Pipfile thing but otherwise...)
+
+publish image:
+  tags:
+    - docker-executor
+  stage: publish
+  dependencies:
+      - build_release
+  script:
+    - cd docker
+    - make push
+  when: manual
 
 
 ###################################################
@@ -99,7 +110,7 @@ test_tango:
 #      extends: .common
 #  stage: build
 #  # instead of calling g++ directly you can also use some build toolkit like make
-#  # install the necessary build tools when needed
+image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base#  # install the necessary build tools when needed
 #  script:
 #    - mkdir build
 #    - cd build
@@ -110,6 +121,7 @@ test_tango:
 #      - build
 
 test:
+  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
     #  extends: .common
   stage: test
   dependencies:
