@@ -44,6 +44,7 @@ build_release:
       - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+      - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - export DEBIAN_FRONTEND=noninteractive
       # don't need sudo for cpp_build_base, do need it for tango-cpp
       - sudo apt update
