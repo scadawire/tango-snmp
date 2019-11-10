@@ -90,8 +90,8 @@ test_tango:
       # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 publish image:
-  tags:
-    - docker-executor
+  #tags:
+  #  - docker-executor
   stage: publish
   dependencies:
       - build_release
