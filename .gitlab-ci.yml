@@ -47,10 +47,10 @@ build_release:
       - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - export DEBIAN_FRONTEND=noninteractive
       # don't need sudo for cpp_build_base, do need it for tango-cpp
-      - sudo apt update
-      - sudo apt install -y libsnmp-dev
+      - sudo apt update -q
+      - sudo apt install -y -q libsnmp-dev
       # tango-cpp image does not have cmake
-      - sudo apt install -y cmake
+      - sudo apt install -y -q cmake g++
       # cpp_build_base image does not have the tango libraries we need
       #- apt install -y libtango-dev
   script:
