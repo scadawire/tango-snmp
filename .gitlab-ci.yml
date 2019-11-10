@@ -91,6 +91,7 @@ test_tango:
       # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 publish image:
+  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   #tags:
   #  - docker-executor
   stage: publish
@@ -244,6 +245,7 @@ test:
 
 pages:
     #  extends: .common
+  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: pages
   dependencies:
     - test
