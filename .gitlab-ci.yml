@@ -66,6 +66,7 @@ build_release:
   artifacts:
     paths:
       - build
+      - docker
 
 test_tango:
   image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
@@ -111,7 +112,7 @@ publish image:
 #      extends: .common
 #  stage: build
 #  # instead of calling g++ directly you can also use some build toolkit like make
-image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base#  # install the necessary build tools when needed
+#  # install the necessary build tools when needed
 #  script:
 #    - mkdir build
 #    - cd build
