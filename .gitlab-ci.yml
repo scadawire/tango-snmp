@@ -14,7 +14,7 @@
 
 # how to combine these two docker images?
 #image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+#image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
 #services:
     #- nexus.engageska-portugal.pt/ska-docker/tango-dependencies
     #- nexus.engageska-portugal.pt/ska-docker/tango-cpp
@@ -38,6 +38,7 @@ stages:
 
 build_release:
     #  extends: .common
+  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
   stage: build
   before_script:
       # these finds were used for figuring out what is installed in which docker image
@@ -91,7 +92,7 @@ build_release:
 #      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
-  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: test
   dependencies:
       - build_release
