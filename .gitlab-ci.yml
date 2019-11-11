@@ -12,10 +12,10 @@
 # For details see https://github.com/ska-telescope/cpp_build_base
 #
 
-# how to combine these two docker images? 
+# how to combine these two docker images?
 #image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
 image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
-#services: 
+#services:
     #- nexus.engageska-portugal.pt/ska-docker/tango-dependencies
     #- nexus.engageska-portugal.pt/ska-docker/tango-cpp
     #- nexus.engageska-portugal.pt/ska-docker/tango-pogo
@@ -68,7 +68,6 @@ build_release:
       - build
       - docker
 
-
 #test_tango:
 #  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
 #  stage: test
@@ -98,8 +97,10 @@ test image:
       - build_release
   script:
       - cd docker
-      # need some way to trigger tests inside the container...
-      - make up
+      - make test
+  artifacts:
+      paths:
+          - build
 
 publish image:
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
@@ -112,6 +113,29 @@ publish image:
     - cd docker
     - make push
   when: manual
+
+pages:
+    #  extends: .common
+  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+  stage: pages
+  dependencies:
+    - test image
+  before_script:
+    - apt update && apt install -y curl
+  script:
+    - mkdir -p .public/build/reports
+    - cd .public
+    - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
+    - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --xml -o build/reports/code-coverage.xml
+    - cp ../build/ctest.xml build/reports/unit-tests.xml
+    # Create and upload GitLab badges
+    - python ../.produce-ci-metrics.py build/reports > ci-metrics.json
+    - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
+    - cd ..
+    - mv .public public
+  artifacts:
+    paths:
+      - public
 
 
 ###################################################
@@ -201,14 +225,14 @@ test:
 #    - make --version
 #    # make will try (and fail) to rebuild because the source is newer than the build
 #    # so we make the build look nice and fresh
-#    - find . -type f -exec touch {} +  
+#    - find . -type f -exec touch {} +
 #    # this ls is for CI debugging only
 #    - ls .. -laR > ls_before_cmake.txt
 #    - cmake . -DCMAKE_INSTALL_PREFIX=/opt
-#    - find . -type f -exec touch {} +  
-#    - find . -type f -name '*.make' -exec touch {} +  
-#    - find . -type f -name '*.o' -exec touch {} +  
-#    - find . -type f -name 'link.txt' -exec touch {} +  
+#    - find . -type f -exec touch {} +
+#    - find . -type f -name '*.make' -exec touch {} +
+#    - find . -type f -name '*.o' -exec touch {} +
+#    - find . -type f -name 'link.txt' -exec touch {} +
 #    - touch bin/TangoSnmp
 #    - ls .. -laR > ls_after_cmake.txt
 #    - make install --trace -d
@@ -219,7 +243,7 @@ test:
 #          - build
 #   ### Below is from cpp-template original test_install step
 #   - cd ../examples/helloworld-user
-#    - if [ -d build ]; then rm -rf build; fi 
+#    - if [ -d build ]; then rm -rf build; fi
 #    - mkdir build
 #    - cd build
 #    - cmake .. -DCMAKE_PREFIX_PATH=/opt
@@ -232,7 +256,7 @@ test:
 #    - cp -r examples/helloworld-user ..
 #    - cd ../helloworld-user
 #    - sed -i 's/find_package(HelloWorld)/add_subdirectory(..\/cpp-template helloworld EXCLUDE_FROM_ALL)/' CMakeLists.txt
-#    - if [ -d build ]; then rm -rf build; fi 
+#    - if [ -d build ]; then rm -rf build; fi
 #    - mkdir build
 #    - cd build
 #    - cmake ..
@@ -253,19 +277,3 @@ test:
 #  only:
 #    - tags
 #    - schedules
-
-pages:
-    #  extends: .common
-  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-  stage: pages
-  dependencies:
-    - test
-  script:
-    - mkdir .public
-    - cd .public
-    - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
-    - cd ..
-    - mv .public public
-  artifacts:
-    paths:
-      - public
