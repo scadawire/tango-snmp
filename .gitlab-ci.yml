@@ -92,11 +92,11 @@ build_release:
 #      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
-  tags:
-      - docker
+  #tags:
+  #    - docker-executor
   services:
       - docker:dind
-  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+  image: nexus.engageska-portugal.pt/ska-docker/tango-builder
   stage: test
   dependencies:
       - build_release
