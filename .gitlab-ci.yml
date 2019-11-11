@@ -93,10 +93,10 @@ build_release:
 
 test image:
   tags:
-      - docker-executor
+      - docker
   services:
       - docker:dind
-  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv
+  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: test
   dependencies:
       - build_release
