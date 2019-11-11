@@ -92,7 +92,7 @@ build_release:
 #      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
-  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv
   stage: test
   dependencies:
       - build_release
