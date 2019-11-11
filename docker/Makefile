@@ -24,7 +24,10 @@ include .make/Makefile.mk
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST = $(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/$(PROJECT):latest
+#IMAGE_TO_TEST = $(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/$(PROJECT):latest
+# AB 2019-11-11 my test is written in python, but the tangosnmp image doesn't contain python...
+#IMAGE_TO_TEST = $(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/$(PROJECT)-tester:latest
+IMAGE_TO_TEST = nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
 
 #
 # CACHE_VOLUME is the name of the Docker volume used to cache eggs and wheels
@@ -115,7 +118,7 @@ make = tar -c test-harness/ | \
 	   docker run -i --rm --network=$(NETWORK_MODE) \
 	   -e TANGO_HOST=$(TANGO_HOST) \
 	   -v $(CACHE_VOLUME):/home/tango/.cache \
-	   --volumes-from=$(CONTAINER_NAME_PREFIX)rsyslog-csplmc:rw \
+	   --volumes-from=$(CONTAINER_NAME_PREFIX)rsyslog:rw \
 	   -v /build -w /build -u tango $(DOCKER_RUN_ARGS) $(IMAGE_TO_TEST) \
 	   bash -c "sudo chown -R tango:tango /build && \
 	   tar x --strip-components 1 --warning=all && \
@@ -128,7 +131,6 @@ test: build up ## test the application
 	$(call make,test); \
 	  status=$$?; \
 	  rm -fr build; \
-          #docker-compose $(COMPOSE_FILE_ARGS) logs;
 	  docker cp $(BUILD):/build .; \
 	  docker rm -f -v $(BUILD); \
 	  $(MAKE) down; \

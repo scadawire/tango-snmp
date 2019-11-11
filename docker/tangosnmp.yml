@@ -37,3 +37,19 @@ services:
     image: jumanjiman/rsyslog
     container_name: ${CONTAINER_NAME_PREFIX}rsyslog
     network_mode: ${NETWORK_MODE}
+
+  tester:
+    image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
+    network_mode: ${NETWORK_MODE}
+    container_name: ${CONTAINER_NAME_PREFIX}tester
+    depends_on:
+      - databaseds
+      - ds
+    environment:
+      - TANGO_HOST=${TANGO_HOST}
+    command: >
+      sh -c "wait-for-it.sh ${TANGO_HOST} --timeout=30 --strict --
+             retry --max=5 && \
+             echo I AM THE TESTER && \
+             ( (python -c 'import tango' && echo python has tango) || echo python no tango )"
+              

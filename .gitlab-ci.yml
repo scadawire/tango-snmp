@@ -68,27 +68,38 @@ build_release:
       - build
       - docker
 
-test_tango:
+
+#test_tango:
+#  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+#  stage: test
+#  dependencies:
+#      - build_release
+#  before_script:
+#      # these finds used for figuring out what is installed in each docker image
+#      - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+#      - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+#      - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+#      - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+#      - export DEBIAN_FRONTEND=noninteractive
+#      - sudo apt update -qq
+#      - sudo apt install -y -qq libsnmp-dev
+#  script:
+#      - cd build/bin
+#      - ./TangoSnmp test || echo 'execution failed, as expected...'
+#      # at this point we seem to be moving into Docker compose territory,
+#      # as we require a tango database too...
+#      # csp-lmc-prototype has a Makefile which looks to do the right things.
+#      # (well, it gets stuck on some Pipfile thing but otherwise...)
+
+test image:
   image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
   stage: test
   dependencies:
       - build_release
-  before_script:
-      # these finds used for figuring out what is installed in each docker image
-      - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - export DEBIAN_FRONTEND=noninteractive
-      - sudo apt update
-      - sudo apt install -y libsnmp-dev
   script:
-      - cd build/bin
-      - ./TangoSnmp test || echo 'executiion failed, as expected...'
-      # at this point we seem to be moving into Docker compose territory,
-      # as we require a tango database too...
-      # csp-lmc-prototype has a Makefile which looks to do the right things.
-      # (well, it gets stuck on some Pipfile thing but otherwise...)
+      - cd docker
+      # need some way to trigger tests inside the container...
+      - make up
 
 publish image:
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
