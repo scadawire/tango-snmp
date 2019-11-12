@@ -5,14 +5,22 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-all: test lint
+all: test 
 
 # wait for the device to be available before beginning the test
 # A temporary volume is mounted at /build when 'make test' is executing.
-# The following steps copy across useful output to this volume which can
-# then be extracted to form the CI summary for the test procedure.
+# These tests run from that location.
+#
+# Note $$ to let bash resolve the variable instead of make.
+#
 test:
 	retry --max=10 -- tango_admin --ping-device ab/ab/48v
-	python *.py
+	echo `pwd`
+	ls
+	for t in *.py; do \
+		python "$$t" | tee "$$t".stdout ; \
+	done
+	ls *.stdout
 
-.PHONY: all test lint
+
+.PHONY: all test

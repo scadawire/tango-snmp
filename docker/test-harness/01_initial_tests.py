@@ -10,9 +10,8 @@ def find_server():
 
 def test_test_device_is_running():
     tango_test = tango.DeviceProxy("ab/ab/48v")
-    print("Device status is")
-    print(tango_test.state())
-    #assert tango_test.state() == tango.DevState.RUNNING
+    # no connection to this device, should be in FAULT state
+    assert tango_test.state() == tango.DevState.FAULT
 
 
 if __name__ == '__main__':

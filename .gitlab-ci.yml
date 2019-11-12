@@ -38,6 +38,8 @@ stages:
 
 build_release:
     #  extends: .common
+  # TODO - this could (should?) be a 'tangosnmp-build' image so we don't need to repeat the whole setup every commit?
+  # i.e. need another Dockerfile. may be able to use "copy from" to merge tango-cpp and cpp_build_base.
   image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
   stage: build
   before_script:
@@ -49,10 +51,10 @@ build_release:
       - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - export DEBIAN_FRONTEND=noninteractive
       # don't need sudo for cpp_build_base, do need it for tango-cpp
-      - sudo apt update -qq
-      - sudo apt install -y -qq libsnmp-dev
+      - sudo apt-get update -q
+      - sudo apt-get install -y -q libsnmp-dev
       # tango-cpp image does not have cmake (or a c++ compiler)
-      - sudo apt install -y -qq cmake g++
+      - sudo apt-get install -y -q cmake g++
       # cpp_build_base image does not have the tango libraries we need
       #- apt install -y libtango-dev
   script:
