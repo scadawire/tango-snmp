@@ -26,7 +26,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
 
   # AB - trying to see if this will run on default GitLab runners
-  #.common: {tags: [engageska, docker]}
+  .common: {tags: [engageska, docker]}
   # also commented out all "extends common" lines below.
 
 stages:
@@ -37,7 +37,7 @@ stages:
   - pages
 
 build_release:
-    #  extends: .common
+  extends: .common
   # TODO - this could (should?) be a 'tangosnmp-build' image so we don't need to repeat the whole setup every commit?
   # i.e. need another Dockerfile. may be able to use "copy from" to merge tango-cpp and cpp_build_base.
   image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
@@ -94,8 +94,8 @@ build_release:
 #      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
-  #tags:
-  #    - docker-executor
+  tags:
+      - docker-executor
   services:
       - docker:dind
   image: nexus.engageska-portugal.pt/ska-docker/tango-builder
@@ -111,8 +111,8 @@ test image:
 
 publish image:
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-  #tags:
-  #  - docker-executor
+  tags:
+    - docker-executor
   stage: publish
   dependencies:
       - build_release
@@ -122,7 +122,7 @@ publish image:
   when: manual
 
 pages:
-    #  extends: .common
+  extends: .common
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: pages
   dependencies:
@@ -166,8 +166,8 @@ pages:
 #      - build
 
 test:
+  extends: .common
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-    #  extends: .common
   stage: test
   dependencies:
       #- build_debug
