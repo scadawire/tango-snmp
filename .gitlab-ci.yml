@@ -25,9 +25,7 @@ variables:
   # For details see https://docs.gitlab.com/ee/ci/yaml/README.html#git-submodule-strategy
   GIT_SUBMODULE_STRATEGY: normal
 
-  # AB - trying to see if this will run on default GitLab runners
-  .common: {tags: [engageska, docker]}
-  # also commented out all "extends common" lines below.
+.common: {tags: [engageska, docker]}
 
 stages:
   - build
