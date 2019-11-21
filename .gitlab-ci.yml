@@ -45,7 +45,6 @@ stages:
 
 build_release:
   extends: .common
-  tags: [andrew]
   # TODO - this could (should?) be a 'tangosnmp-build' image so we don't need to repeat the whole setup every commit?
   # i.e. need another Dockerfile. may be able to use "copy from" to merge tango-cpp and cpp_build_base.
   image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
