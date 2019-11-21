@@ -119,7 +119,7 @@ test image:
           - build
 
 try perentie server:
-  tags: perentie
+  tags: [perentie]
   image: nexus.engageska-portugal.pt/ska-docker/tango-builder
   stage: test
   dependencies:
