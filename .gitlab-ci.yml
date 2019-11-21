@@ -118,6 +118,16 @@ test image:
       paths:
           - build
 
+try perentie server:
+  tags: perentie
+  image: nexus.engageska-portugal.pt/ska-docker/tango-builder
+  stage: test
+  dependencies:
+      - build_release
+  script:
+      - hostname
+      - env
+
 publish image:
   # AB added 2019-11-21
   extends: .common 
