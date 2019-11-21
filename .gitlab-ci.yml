@@ -29,6 +29,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
   #.common: {tags: [engageska, docker]}
+.common: {tags: [docker]}
 
   # before_script is used to define the command that should be run before all jobs, including deploy jobs, but after the restoration of artifacts.
   # This can be an array or a multi-line string. 
@@ -43,7 +44,7 @@ stages:
   - pages
 
 build_release:
-  #extends: .common
+  extends: .common
   # TODO - this could (should?) be a 'tangosnmp-build' image so we don't need to repeat the whole setup every commit?
   # i.e. need another Dockerfile. may be able to use "copy from" to merge tango-cpp and cpp_build_base.
   image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
@@ -100,6 +101,8 @@ build_release:
 #      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
+  # AB added 2019-11-21
+  extends: .common 
   #tags:
   #    - docker-executor
   services:
@@ -116,9 +119,11 @@ test image:
           - build
 
 publish image:
+  # AB added 2019-11-21
+  extends: .common 
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-  tags:
-    - docker-executor
+  #tags:
+  #  - docker-executor
   stage: publish
   dependencies:
       - build_release
@@ -128,7 +133,7 @@ publish image:
   when: manual
 
 pages:
-  #extends: .common
+  extends: .common
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: pages
   dependencies:
