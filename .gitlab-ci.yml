@@ -95,8 +95,8 @@ build_release:
 #      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
-  tags:
-      - docker-executor
+  #tags:
+  #    - docker-executor
   services:
       - docker:dind
   image: nexus.engageska-portugal.pt/ska-docker/tango-builder
