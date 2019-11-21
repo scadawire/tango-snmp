@@ -121,9 +121,7 @@ test image:
 try perentie server:
   tags: [perentie]
   image: nexus.engageska-portugal.pt/ska-docker/tango-builder
-  stage: test
-  dependencies:
-      - build_release
+  stage: build
   script:
       - hostname
       - env
