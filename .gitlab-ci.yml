@@ -124,7 +124,6 @@ try perentie server:
   stage: build
   script:
       - hostname
-      - env
 
 publish image:
   # AB added 2019-11-21
