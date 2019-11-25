@@ -126,9 +126,10 @@ pages:
     - cd .public
     - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
     - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --xml -o build/reports/code-coverage.xml
+    # these steps fail because ctest currently does no tests, hence no report
     #- cp ../build/ctest.xml build/reports/unit-tests.xml
     # Create and upload GitLab badges
-    - python ../.produce-ci-metrics.py build/reports > ci-metrics.json
+    #- python ../.produce-ci-metrics.py build/reports > ci-metrics.json
     - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
     - cd ..
     - mv .public public
@@ -157,7 +158,7 @@ pages:
 #    paths:
 #      - build
 
-test:
+ctest:
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: test
   dependencies:
