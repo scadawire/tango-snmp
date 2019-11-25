@@ -1,24 +1,4 @@
-# This file is a template, and might need editing before it works on your project.
-# use the official gcc image, based on debian
-# can use verions as well, like gcc:5.2
-# see https://hub.docker.com/_/gcc/
-#
-# This base image is based on debian:buster-slim and contains:
-#  * gcc 8.3.0
-#  * clang 7.0.1
-#  * cmake 3.13.4
-#  * and more
-#
-# For details see https://github.com/ska-telescope/cpp_build_base
-#
-
-# how to combine these two docker images?
-#image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-#image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
-#services:
-    #- nexus.engageska-portugal.pt/ska-docker/tango-dependencies
-    #- nexus.engageska-portugal.pt/ska-docker/tango-cpp
-    #- nexus.engageska-portugal.pt/ska-docker/tango-pogo
+# This file is a mash-up between the SKA cpp-template and other tango projects.
 
 variables:
   # Needed if you want automatic submodule checkout
@@ -95,10 +75,6 @@ build_release:
 #  script:
 #      - cd build/bin
 #      - ./TangoSnmp test || echo 'execution failed, as expected...'
-#      # at this point we seem to be moving into Docker compose territory,
-#      # as we require a tango database too...
-#      # csp-lmc-prototype has a Makefile which looks to do the right things.
-#      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
   tags:
@@ -125,7 +101,6 @@ test image:
 #      - hostname
 
 publish image:
-  # AB added 2019-11-21
   extends: .common 
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   tags:
@@ -151,7 +126,7 @@ pages:
     - cd .public
     - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
     - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --xml -o build/reports/code-coverage.xml
-    - cp ../build/ctest.xml build/reports/unit-tests.xml
+    #- cp ../build/ctest.xml build/reports/unit-tests.xml
     # Create and upload GitLab badges
     - python ../.produce-ci-metrics.py build/reports > ci-metrics.json
     - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
@@ -183,7 +158,6 @@ pages:
 #      - build
 
 test:
-  #extends: .common
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: test
   dependencies:
