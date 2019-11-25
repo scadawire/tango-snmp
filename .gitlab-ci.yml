@@ -101,18 +101,17 @@ build_release:
 #      # (well, it gets stuck on some Pipfile thing but otherwise...)
 
 test image:
-  # AB added 2019-11-21
-  extends: .common 
   tags:
       - docker-executor
+  image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
   services:
       - docker:dind
-  image: nexus.engageska-portugal.pt/ska-docker/tango-builder
   stage: test
-  dependencies:
-      - build_release
+  #dependencies:
+  #    - build_release
   script:
       - cd docker
+      - make build
       - make test
   artifacts:
       paths:
