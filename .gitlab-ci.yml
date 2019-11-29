@@ -30,10 +30,14 @@ update builder:
     when: manual
     script:
         - cd docker
-        - docker build -t tangosnmp_builder . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) --build-arg DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER)
+        - docker build -t tangosnmp_builder . -f Dockerfile.build 
+          #--build-arg DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) --build-arg DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER)
 
 
 build_release:
+  ## temporarily disable build to save time/energy
+  when: manual
+  ##
   extends: .common
   # TODO - this could (should?) be a 'tangosnmp-build' image so we don't need to repeat the whole setup every commit?
   # i.e. need another Dockerfile. may be able to use "copy from" to merge tango-cpp and cpp_build_base.
