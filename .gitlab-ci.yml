@@ -29,7 +29,7 @@ update builder:
     stage: builder
     when: manual
     script:
-        - docker build -t tangosnmp_builder -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) --build-arg DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER)
+        - docker build -t tangosnmp_builder . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) --build-arg DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER)
 
 
 build_release:
