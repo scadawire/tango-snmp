@@ -157,7 +157,8 @@ pages:
 #      - build
 
 ctest:
-  extends: .common
+  tags:
+      - docker-executor
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: test
   dependencies:
