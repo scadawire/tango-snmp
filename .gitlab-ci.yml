@@ -17,11 +17,20 @@ variables:
           - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
 
 stages:
+  - builder
   - build
   - linting
   - test
   - publish
   - pages
+
+update builder:
+    extends: .common
+    stage: builder
+    when: manual
+    script:
+        - docker build -t tangosnmp_builder -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) --build-arg DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER)
+
 
 build_release:
   extends: .common
@@ -101,7 +110,8 @@ test image:
 #      - hostname
 
 publish image:
-  extends: .common 
+  tags:
+      - engageska, shell
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: publish
   dependencies:
