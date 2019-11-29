@@ -110,7 +110,8 @@ test image:
 #      - hostname
 
 publish image:
-  extends: .common 
+  tags:
+      - engageska, shell
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: publish
   dependencies:
