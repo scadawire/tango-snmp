@@ -26,6 +26,8 @@ stages:
 
 update builder:
     extends: .common
+    tags:
+        - docker-executor
     stage: builder
     when: manual
     script:
@@ -177,8 +179,8 @@ ctest:
   image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
   stage: test
   dependencies:
-      #- build_debug
       - build_release
+      #- build_debug
   script:
     - cd build
     - ctest -T test --no-compress-output
