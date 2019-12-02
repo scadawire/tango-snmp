@@ -25,14 +25,17 @@ stages:
   - pages
 
 update builder:
-    extends: .common
+    image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
+    services:
+        - docker:dind
     tags:
-        - engageska, docker
+        - docker-executor
     stage: builder
     when: manual
     script:
         - cd docker
-        - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USERNAME/tangosnmp_builder
+        - export DOCKER_REGISTRY_USER=ska-docker
+        - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USER/tangosnmp_builder
         - echo $IMAGE
         - docker build -t $IMAGE . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
         # TODO - tag, push
