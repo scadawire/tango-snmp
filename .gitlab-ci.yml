@@ -35,10 +35,12 @@ update builder:
     script:
         - cd docker
         - export DOCKER_REGISTRY_USER=ska-docker
-        - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USER/tangosnmp_builder
-        - echo $IMAGE
-        - docker build -t $IMAGE . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
-        # TODO - tag, push
+        - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USER/tangosnmp-builder
+        - export VERSION=`date +"%Y-%m-%d"
+        - docker build -t ${IMAGE}:${VERSION} . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
+        - docker tag ${IMAGE}:${VERSION} latest
+        - docker push ${IMAGE}:${VERSION}
+        - docker push ${IMAGE}:latest
 
 build_release:
   ## temporarily disable build to save time/energy
@@ -47,7 +49,8 @@ build_release:
   extends: .common
   # TODO - this could (should?) be a 'tangosnmp-build' image so we don't need to repeat the whole setup every commit?
   # i.e. need another Dockerfile. may be able to use "copy from" to merge tango-cpp and cpp_build_base.
-  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+  #image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
+  image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-builder
   stage: build
   before_script:
       # these finds were used for figuring out what is installed in which docker image
