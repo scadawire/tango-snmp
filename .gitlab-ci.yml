@@ -33,7 +33,8 @@ update builder:
     script:
         - cd docker
         - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USER/tangosnmp_builder
-        - docker build -t tangosnmp_builder . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
+        - echo $IMAGE
+        - docker build -t $IMAGE . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
         # TODO - tag, push
 
 build_release:
