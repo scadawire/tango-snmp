@@ -88,7 +88,7 @@ build_release:
 
 test image:
     tags:
-        - docker-executor
+        - shell
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     services:
         - docker:dind
