@@ -28,8 +28,9 @@ update builder:
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     services:
         - docker:dind
-    tags:
-        - docker-executor
+    #tags:
+    #    - docker-executor
+    extends: .common
     stage: builder
     when: manual
     script:
@@ -59,12 +60,12 @@ build_release:
       - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
       - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - export DEBIAN_FRONTEND=noninteractive
+      #- export DEBIAN_FRONTEND=noninteractive
       # don't need sudo for cpp_build_base, do need it for tango-cpp
-      - sudo apt-get update -q
-      - sudo apt-get install -y -q libsnmp-dev
+      #- sudo apt-get update -q
+      #- sudo apt-get install -y -q libsnmp-dev
       # tango-cpp image does not have cmake (or a c++ compiler)
-      - sudo apt-get install -y -q cmake g++
+      #- sudo apt-get install -y -q cmake g++
       # cpp_build_base image does not have the tango libraries we need
       #- apt install -y libtango-dev
   script:
