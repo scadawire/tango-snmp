@@ -36,7 +36,7 @@ update builder:
         - cd docker
         - export DOCKER_REGISTRY_USER=ska-docker
         - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USER/tangosnmp-builder
-        - export VERSION=`date +"%Y-%m-%d"
+        - export VERSION=`date +"%Y-%m-%d"`
         - docker build -t ${IMAGE}:${VERSION} . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
         - docker tag ${IMAGE}:${VERSION} latest
         - docker push ${IMAGE}:${VERSION}
