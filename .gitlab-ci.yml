@@ -1,35 +1,35 @@
 # This file is a mash-up between the SKA cpp-template and other tango projects.
 
 variables:
-  # Needed if you want automatic submodule checkout
-  # For details see https://docs.gitlab.com/ee/ci/yaml/README.html#git-submodule-strategy
-  GIT_SUBMODULE_STRATEGY: normal
-  IMAGE_NAME: tangosnmp-test
-  #DOCKER_HOST: tcp://docker:2376
-  DOCKER_DRIVER: overlay2
+    # Needed if you want automatic submodule checkout
+    # For details see https://docs.gitlab.com/ee/ci/yaml/README.html#git-submodule-strategy
+    GIT_SUBMODULE_STRATEGY: normal
+    IMAGE_NAME: tangosnmp-test
+    #DOCKER_HOST: tcp://docker:2376
+    DOCKER_DRIVER: overlay2
 
-  #.common: {tags: [engageska, docker]}
 .common: 
-      tags: [engageska, docker]
-      # before_script is used to define the command that should be run before all jobs, including deploy jobs, but after the restoration of artifacts.
-      # This can be an array or a multi-line string. 
-      before_script:
-          - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
+    tags: [engageska, docker]
+    # before_script is used to define the command that should be run before all jobs, including deploy jobs, but after the restoration of artifacts.
+    # This can be an array or a multi-line string. 
+    before_script:
+        - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
 
 stages:
-  - builder
-  - build
-  - linting
-  - test
-  - publish
-  - pages
+    - builder
+    - build
+    - linting
+    - test
+    - publish
+    - pages
 
+# Update the "tangosnmp-builder" image which is used to compile the code.
+# This only needs to be done when tango-builder is updated,
+# or to use a newer version of libsnmp/g++.
 update builder:
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     services:
         - docker:dind
-    #tags:
-    #    - docker-executor
     extends: .common
     stage: builder
     when: manual
@@ -44,43 +44,29 @@ update builder:
         - docker push ${IMAGE}:latest
 
 build_release:
-  ## temporarily disable build to save time/energy
-  when: manual
-  ##
-  extends: .common
-  # TODO - this could (should?) be a 'tangosnmp-build' image so we don't need to repeat the whole setup every commit?
-  # i.e. need another Dockerfile. may be able to use "copy from" to merge tango-cpp and cpp_build_base.
-  #image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
-  image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-builder
-  stage: build
-  before_script:
-      # these finds were used for figuring out what is installed in which docker image
-      - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-      #- export DEBIAN_FRONTEND=noninteractive
-      # don't need sudo for cpp_build_base, do need it for tango-cpp
-      #- sudo apt-get update -q
-      #- sudo apt-get install -y -q libsnmp-dev
-      # tango-cpp image does not have cmake (or a c++ compiler)
-      #- sudo apt-get install -y -q cmake g++
-      # cpp_build_base image does not have the tango libraries we need
-      #- apt install -y libtango-dev
-  script:
-      - mkdir build
-      - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=Release
-      - make
-      # the below is taken from the test_install job, I can't get it to work in that job...
-      # (it tries to rebuild, but lacking the headers it can't - but it shouldn't need to rebuild...)
-      - cmake . -DCMAKE_INSTALL_PREFIX=../docker
-      - make install
-  artifacts:
-    paths:
-      - build
-      - docker
+    extends: .common
+    image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-builder
+    stage: build
+    before_script:
+        # these finds were used for figuring out what is installed in which docker image
+        - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+        - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+        - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+        - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+        - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+    script:
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - make
+          # the below is taken from the test_install job, I can't get it to work in that job...
+          # (it tries to rebuild, but lacking the headers it can't - but it shouldn't need to rebuild...)
+        - cmake . -DCMAKE_INSTALL_PREFIX=../docker
+        - make install
+    artifacts:
+        paths:
+            - build
+            - docker
 
 #test_tango:
 #  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
@@ -101,21 +87,21 @@ build_release:
 #      - ./TangoSnmp test || echo 'execution failed, as expected...'
 
 test image:
-  tags:
-      - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
-  services:
-      - docker:dind
-  stage: test
-  #dependencies:
-  #    - build_release
-  script:
-      - cd docker
-      - make build
-      - make test
-  artifacts:
-      paths:
-          - build
+    tags:
+        - docker-executor
+    image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
+    services:
+        - docker:dind
+    stage: test
+    #dependencies:
+    #    - build_release
+    script:
+        - cd docker
+        - make build
+        - make test
+    artifacts:
+        paths:
+            - build
 
 #try perentie server:
 #  tags: [perentie]
@@ -125,40 +111,40 @@ test image:
 #      - hostname
 
 publish image:
-  tags:
-      - engageska, shell
-  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-  stage: publish
-  dependencies:
-      - build_release
-  script:
-    - cd docker
-    - make push
-  when: manual
+    tags:
+        - engageska, shell
+    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+    stage: publish
+    dependencies:
+        - build_release
+    script:
+        - cd docker
+        - make push
+    when: manual
 
 pages:
-  extends: .common
-  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-  stage: pages
-  dependencies:
-    - test image
-  before_script:
-    - apt update && apt install -y curl
-  script:
-    - mkdir -p .public/build/reports
-    - cd .public
-    - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
-    - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --xml -o build/reports/code-coverage.xml
-    # these steps fail because ctest currently does no tests, hence no report
-    #- cp ../build/ctest.xml build/reports/unit-tests.xml
-    # Create and upload GitLab badges
-    #- python ../.produce-ci-metrics.py build/reports > ci-metrics.json
-    - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
-    - cd ..
-    - mv .public public
-  artifacts:
-    paths:
-      - public
+    extends: .common
+    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+    stage: pages
+    dependencies:
+        - test image
+    before_script:
+        - apt update && apt install -y curl
+    script:
+        - mkdir -p .public/build/reports
+        - cd .public
+        - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
+        - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --xml -o build/reports/code-coverage.xml
+          # these steps fail because ctest currently does no tests, hence no report
+          #- cp ../build/ctest.xml build/reports/unit-tests.xml
+          # Create and upload GitLab badges
+          #- python ../.produce-ci-metrics.py build/reports > ci-metrics.json
+        - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
+        - cd ..
+        - mv .public public
+    artifacts:
+        paths:
+            - public
 
 
 ###################################################
@@ -182,24 +168,24 @@ pages:
 #      - build
 
 ctest:
-  tags:
-      - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-  stage: test
-  dependencies:
-      - build_release
-      #- build_debug
-  script:
-    - cd build
-    - ctest -T test --no-compress-output
-  after_script:
-    - cd build
-    - ctest2junit > ctest.xml
-  artifacts:
-    paths:
-      - build/
-    reports:
-      junit: build/ctest.xml
+    tags:
+        - docker-executor
+    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+    stage: test
+    dependencies:
+        - build_release
+          #- build_debug
+    script:
+        - cd build
+        - ctest -T test --no-compress-output
+    after_script:
+        - cd build
+        - ctest2junit > ctest.xml
+    artifacts:
+        paths:
+            - build/
+        reports:
+            junit: build/ctest.xml
 
 #
 #build_export_compile_commands:
