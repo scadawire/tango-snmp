@@ -27,7 +27,7 @@ stages:
 update builder:
     extends: .common
     tags:
-        - engageska, shell
+        - engageska, docker
     stage: builder
     when: manual
     script:
