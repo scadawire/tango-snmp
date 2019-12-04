@@ -14,7 +14,7 @@ all: test
 # Note $$ to let bash resolve the variable instead of make.
 #
 test:
-	retry --max=10 -- tango_admin --ping-device ab/ab/48v
+	retry --max=10 -- tango_admin --ping-device ab/ab/simulator
 	echo `pwd`
 	ls
 	for t in *.py; do \

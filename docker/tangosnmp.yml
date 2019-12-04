@@ -12,7 +12,10 @@ services:
     command: >
       sh -c "wait-for-it.sh ${TANGO_HOST} --timeout=60 --strict --
              ls -la dsconfig &&
-             json2tango -w -a -u dsconfig/db.json && sleep infinity"
+             json2tango -w -a dsconfig/db.json && sleep infinity"
+             # -w write to database
+             # -u update (use to not delete stuff)
+             # -a ???
     volumes:
       - ./dsconfig:/dsconfig
 
@@ -32,6 +35,8 @@ services:
              TangoSnmp andrew"
     volumes_from:
       - rsyslog:rw
+    volumes:
+      - ./mibs:/root/.snmp/mibs
 
   rsyslog: 
     image: jumanjiman/rsyslog
@@ -39,7 +44,8 @@ services:
     network_mode: ${NETWORK_MODE}
 
   tester:
-    image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
+    #image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
+    image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-tester:latest
     network_mode: ${NETWORK_MODE}
     container_name: ${CONTAINER_NAME_PREFIX}tester
     depends_on:
@@ -51,5 +57,5 @@ services:
       sh -c "wait-for-it.sh ${TANGO_HOST} --timeout=30 --strict --
              retry --max=5 && \
              echo I AM THE TESTER && \
-             ( (python -c 'import tango' && echo python has tango) || echo python no tango )"
-              
+             ( (python -c 'import tango' && echo python has tango) || echo python no tango ) &&
+             snmpsimd.py --data-dir=. --agent-udpv4-endpoint=127.0.0.1:1024"
