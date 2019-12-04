@@ -157,7 +157,7 @@ endif
 	#docker pull $(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/mid-cbf-mcs:latest
 	$(DOCKER_COMPOSE_ARGS) docker-compose -f tangodb.yml up -d
 	# put a sleep to wait TANGO DB 
-	@sleep 10
+	@sleep 5
 	$(DOCKER_COMPOSE_ARGS) docker-compose $(COMPOSE_FILE_ARGS) up -d
 
 piplock: build  ## overwrite Pipfile.lock with the image version

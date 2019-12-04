@@ -36,6 +36,9 @@ def test_snmp_simulator():
     #  note for interactive debugging:
     #  snmp_sim.put_property({'DynamicAttributes': ['one=SIMULATOR-MIB:simulator.1.1,devlong,READ,one thing,units,%d']})
     print("snmp_sim.one: {}".format(snmp_sim.one))
+    print("setting to 84")
+    snmp_sim.one = 84    
+    print("snmp_sim.one: {}".format(snmp_sim.one))
     assert True
 
 if __name__ == '__main__':

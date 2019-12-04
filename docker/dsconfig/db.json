@@ -9,7 +9,7 @@
                                 "127.0.0.1:1024"
                             ], 
                             "DynamicAttributes": [
-                                "one=SIMULATOR-MIB:simulator.1.1,devlong,READ,one thing,units,%d" 
+                                "one=SIMULATOR-MIB:simulator.1.1,devlong,READ_WRITE,one thing,units,%d" 
                             ], 
                             "community": [
                                 "one"
