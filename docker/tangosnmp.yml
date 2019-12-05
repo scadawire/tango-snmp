@@ -12,7 +12,12 @@ services:
     command: >
       sh -c "wait-for-it.sh ${TANGO_HOST} --timeout=60 --strict --
              ls -la dsconfig &&
+             sed -i 's/127.0.0.1/${CONTAINER_NAME_PREFIX}tester/g' dsconfig/db.json &&
              json2tango -w -a dsconfig/db.json && sleep infinity"
+             # sed is used to replace hard-coded IP (works on local PC) 
+             #  with docker network reference to run on CI
+             #
+             # json2tango parameters:
              # -w write to database
              # -u update (use to not delete stuff)
              # -a ???
@@ -58,4 +63,5 @@ services:
              retry --max=5 && \
              echo I AM THE TESTER && \
              ( (python -c 'import tango' && echo python has tango) || echo python no tango ) &&
-             snmpsimd.py --data-dir=. --agent-udpv4-endpoint=127.0.0.1:1024"
+             snmpsimd.py --data-dir=. --agent-udpv4-endpoint=${CONTAINER_NAME_PREFIX}tester:1024"
+             # 127.0.0.1 works on host network (local PC), but not in GitLab CI
