@@ -56,7 +56,7 @@ tester:
     script:
         - cd docker/tester
         - export DOCKER_REGISTRY_USER=ska-docker
-        - ./build_tester push
+        - ./build_tester.sh push
 
 build_release:
     extends: .common
