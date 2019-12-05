@@ -26,7 +26,7 @@ stages:
 # Update the "tangosnmp-builder" image which is used to compile the code.
 # This only needs to be done when tango-builder is updated,
 # or to use a newer version of libsnmp/g++.
-update builder:
+builder:
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     services:
         - docker:dind
@@ -46,7 +46,7 @@ update builder:
 # Update the "tangosnmp-tester" image which is used to run tests.
 # This only needs to be done when the tester needs new stuff
 # (e.g. use a newer version of libsnmp/g++)
-update builder:
+tester:
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     services:
         - docker:dind
