@@ -16,7 +16,7 @@ variables:
         - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
 
 stages:
-    - builder
+    - infrastructure
     - build
     - linting
     - test
@@ -31,7 +31,7 @@ update builder:
     services:
         - docker:dind
     extends: .common
-    stage: builder
+    stage: infrastructure
     when: manual
     script:
         - cd docker
@@ -42,6 +42,21 @@ update builder:
         - docker push ${IMAGE}:${VERSION}
         - docker tag ${IMAGE}:${VERSION} ${IMAGE}:latest
         - docker push ${IMAGE}:latest
+
+# Update the "tangosnmp-tester" image which is used to run tests.
+# This only needs to be done when the tester needs new stuff
+# (e.g. use a newer version of libsnmp/g++)
+update builder:
+    image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
+    services:
+        - docker:dind
+    extends: .common
+    stage: infrastructure
+    when: manual
+    script:
+        - cd docker/tester
+        - export DOCKER_REGISTRY_USER=ska-docker
+        - ./build_tester push
 
 build_release:
     extends: .common
