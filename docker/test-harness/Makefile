@@ -15,12 +15,9 @@ all: test
 #
 test:
 	retry --max=10 -- tango_admin --ping-device ab/ab/simulator
-	echo `pwd`
-	ls
 	for t in *.py; do \
-		python "$$t" | tee "$$t".stdout ; \
+		script --flush --quiet --return "$$t".stdout --command "pytest \"$$t\" "; \
 	done
-	ls *.stdout
 
 
 .PHONY: all test
