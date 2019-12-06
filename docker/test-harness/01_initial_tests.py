@@ -2,22 +2,9 @@ import tango
 import unittest
 
 _my_server = "TangoSnmp"
-
-def find_server():
-    db = tango.Database()
-    sl = db.get_server_list("{}*".format(_my_server))
-    print("Found {} instances of {}".format(len(sl), _my_server))
-    assert len(sl) > 0
-
-def not_exported_device():
+def nes():
     not_exp = tango.DeviceProxy("not/exported/device")
-    print("not_exp device state: {}".format(not_exp.state()))
-    print("not_exp device status: {}".format(not_exp.status()))
-
-def no_comms_device_state():
-    no_comms = tango.DeviceProxy("no/comms/device")
-    return no_comms.state()
-
+    return not_exp.state()
 
     # TODO - refactor to use testing framework properly (Check what other SKA tango uses!)
     # - a device in its own SimulationMode (no SNMP)
@@ -29,34 +16,62 @@ class MyTestCase(unittest.TestCase):
         self.assertGreater(len(sl), 0, 'TangoSnmp instances in db')
 
     def test10(self):
-        self.assertRaises(tango.ConnectionFailed, not_exported_device)
+        not_exp = tango.DeviceProxy("not/exported/device")
+        with self.assertRaises(tango.ConnectionFailed) as context:
+            x = not_exp.state()
     def test11(self):
         no_comms = tango.DeviceProxy("no/comms/device")
         no_comms.init()
         self.assertEqual(no_comms.state(), tango.DevState.ON, 'no comms initial state')
-        print('no comms device state after init: {}'.format(no_comms.state()))
     def test12(self):
         no_comms = tango.DeviceProxy("no/comms/device")
         with self.assertRaises(tango.DevFailed) as context:
-            x = no_comms.none
+            # this attribute is specified in the DynamicAttributes 
+            x = no_comms.one
         e = context.exception
         # DevFailed exception should contain two 'DevError's
         # args[0] from TangoSnmp (timeout)
         # args[1] from DeviceProxy (can't read attribute)
         self.assertEqual(e.args[0].reason, 'TangoSnmp_SnmpError', 'DevError reason 0')
         self.assertEqual(e.args[1].reason, 'API_AttributeFailed', 'DevError reason 1')
-        print('no comms device state after attr fail: {}'.format(no_comms.state()))
-        print('no comms device status after attr fail: {}'.format(no_comms.status()))
-        # TODO - test an attribute that is not even defined in DynamicAttributes,
-        # see if result is any different to above...
+        self.assertEqual(no_comms.state(), tango.DevState.ON, 'no comms state after SNMP error')
+    def test13(self):
+        no_comms = tango.DeviceProxy("no/comms/device")
+        with self.assertRaises(AttributeError) as context:
+            # this attribute is NOT specified in the DynamicAttributes 
+            x = no_comms.attribute_that_doesnt_exist
+        e = context.exception
+        self.assertEqual(no_comms.state(), tango.DevState.ON, 'no comms state after AttributeError')
+    def test14(self):
+        no_comms = tango.DeviceProxy("no/comms/device")
+        no_comms.GlobalSimulationEnable(True)
+        # in simulation mode, returned value increments by 10 each time
+        self.assertEqual(no_comms.one, 10)
+        self.assertEqual(no_comms.one, 20)
+        self.assertEqual(no_comms.one, 30)
 
     def test20(self):
         snmp_sim = tango.DeviceProxy("ab/ab/simulator")
         self.assertEqual(snmp_sim.state(), tango.DevState.ON, 'SNMP sim device ON')
     def test21(self):
         snmp_sim = tango.DeviceProxy("ab/ab/simulator")
+        # starting value of 42 is specified in one.snmprec config file
         self.assertEqual(snmp_sim.one, 42, 'SNMP sim read')
     def test22(self):
+        snmp_sim = tango.DeviceProxy("ab/ab/simulator")
+        snmp_sim.GlobalSimulationEnable(True)
+        self.assertEqual(snmp_sim.one, 10, 'tango device simulation enabled')
+        snmp_sim.GlobalSimulationEnable(False)
+        self.assertEqual(snmp_sim.one, 42, 'tango device simulation disabled')
+    def test23(self):
+        snmp_sim = tango.DeviceProxy("ab/ab/simulator")
+        #snmp_sim.Init()
+        snmp_sim.GlobalSimulationEnable(True)
+        snmp_sim.one = 888    
+        self.assertNotEqual(snmp_sim.one, 888, 'tango device simulation ignore write')
+        snmp_sim.GlobalSimulationEnable(False)
+        self.assertEqual(snmp_sim.one, 42, 'tango device simulation disabled')
+    def test24(self):
         snmp_sim = tango.DeviceProxy("ab/ab/simulator")
         snmp_sim.one = 84    
         self.assertEqual(snmp_sim.one, 84, 'SNMP sim write')
