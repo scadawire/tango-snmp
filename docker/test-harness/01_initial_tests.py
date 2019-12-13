@@ -1,16 +1,11 @@
 import tango
 import unittest
 
-_my_server = "TangoSnmp"
-def nes():
-    not_exp = tango.DeviceProxy("not/exported/device")
-    return not_exp.state()
-
     # TODO - refactor to use testing framework properly (Check what other SKA tango uses!)
-    # - a device in its own SimulationMode (no SNMP)
 
 class MyTestCase(unittest.TestCase):
     def test00(self):
+        _my_server = "TangoSnmp"
         db = tango.Database()
         sl = db.get_server_list("{}*".format(_my_server))
         self.assertGreater(len(sl), 0, 'TangoSnmp instances in db')
