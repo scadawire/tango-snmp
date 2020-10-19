@@ -12,7 +12,7 @@ variables:
 stages:
     - compile
     - build
-    - linting
+    - lint
     - test
     - publish
     - pages
