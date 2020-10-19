@@ -9,8 +9,8 @@ USER root
 RUN chown tango:tango /app
 
 # base image copies these in, but in this case they are useless empty files
-RUN rm Pipfile
-RUN rm Pipfile.lock
+#RUN rm Pipfile
+#RUN rm Pipfile.lock
 
 # snmp-mibs-downloader is in the non-free repo, so we add it to the sources.list
 RUN cat /etc/apt/sources.list | sed 's/main$/main contrib non-free/' > /etc/apt/sources.list_new && \
