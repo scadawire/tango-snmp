@@ -5,7 +5,6 @@ variables:
     # For details see https://docs.gitlab.com/ee/ci/yaml/README.html#git-submodule-strategy
     GIT_SUBMODULE_STRATEGY: normal
     IMAGE_NAME: tangosnmp-test
-    #DOCKER_HOST: tcp://docker:2376
     DOCKER_DRIVER: overlay2
 
 .common: 
@@ -31,7 +30,7 @@ builder:
     services:
         - docker:dind
     extends: .common
-    stage: infrastructure
+    stage: compile
     when: manual
     script:
         - cd docker
