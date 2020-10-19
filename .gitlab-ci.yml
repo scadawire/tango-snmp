@@ -157,24 +157,24 @@ test image:
 #    artifacts:
 #        paths:
 #            - public
-
-
-ctest:
-    tags:
-        - docker-executor
-    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-    stage: test
-    dependencies:
-        - build_release
-          #- build_debug
-    script:
-        - cd build
-        - ctest -T test --no-compress-output
-    after_script:
-        - cd build
-        - ctest2junit > ctest.xml
-    artifacts:
-        paths:
-            - build/
-        reports:
-            junit: build/ctest.xml
+#
+#
+#ctest:
+#    tags:
+#        - docker-executor
+#    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+#    stage: test
+#    dependencies:
+#        - build_release
+#          #- build_debug
+#    script:
+#        - cd build
+#        - ctest -T test --no-compress-output
+#    after_script:
+#        - cd build
+#        - ctest2junit > ctest.xml
+#    artifacts:
+#        paths:
+#            - build/
+#        reports:
+#            junit: build/ctest.xml
