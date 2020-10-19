@@ -1,0 +1,54 @@
+{
+    "servers": {
+        "TangoSnmp": {
+            "andrew": {
+                "TangoSnmp": {
+                    "ab/ab/simulator": {
+                        "properties": {
+                            "AgentIpAddr": [
+                                "127.0.0.1:1024"
+                            ], 
+                            "DynamicAttributes": [
+                                "one=SIMULATOR-MIB:simulator.1.1,devlong,READ_WRITE,one thing,units,%d" 
+                            ], 
+                            "community": [
+                                "one"
+                            ]
+                        }
+                    },
+                    "no/comms/device": {
+                        "properties": {
+                            "AgentIpAddr": [
+                                "192.0.2.2"
+                            ], 
+                            "DynamicAttributes": [
+                                "one=SIMULATOR-MIB:simulator.1.1,devlong,READ_WRITE,nothing,units,%d" 
+                            ], 
+                            "community": [
+                                "no_community"
+                            ]
+                        }
+                    } 
+                }
+            },
+            "do_not_run_this_one": {
+                "TangoSnmp": {
+                    "not/exported/device": {
+                        "properties": {
+                            "AgentIpAddr": [
+                                "192.0.2.2"
+                            ], 
+                            "DynamicAttributes": [
+                                "not_exported=SIMULATOR-MIB:simulator.1.1,devlong,READ_WRITE,nothing,units,%d" 
+                            ], 
+                            "community": [
+                                "not_exported"
+                            ]
+                        }
+                    } 
+
+                }
+            }
+        } 
+    }
+}

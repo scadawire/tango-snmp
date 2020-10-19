@@ -8,13 +8,13 @@
 # the Docker tag for this project. The definition below inherits the standard
 # value for DOCKER_REGISTRY_HOST (=rnexus.engageska-portugal.pt) and overwrites
 # DOCKER_REGISTRY_USER and PROJECT to give a final Docker tag of
-# nexus.engageska-portugal.pt/tango-example/powersupply
+# nexus.engageska-portugal.pt/tangosnmp/powersupply
 #
-PROJECT = tango-example
+PROJECT = tangosnmp
 
 # KUBE_NAMESPACE defines the Kubernetes Namespace that will be deployed to
 # using Helm.  If this does not already exist it will be created
-KUBE_NAMESPACE ?= tango-example
+KUBE_NAMESPACE ?= tangosnmp
 
 # RELEASE_NAME is the release that all Kubernetes resources will be labelled
 # with
@@ -43,7 +43,7 @@ DOCKER_VOLUMES ?= /var/run/docker.sock:/var/run/docker.sock
 # registry credentials - user/pass/registry - set these in PrivateRules.mak
 DOCKER_REGISTRY_USER_LOGIN ?=  ## registry credentials - user - set in PrivateRules.mak
 CI_REGISTRY_PASS_LOGIN ?=  ## registry credentials - pass - set in PrivateRules.mak
-CI_REGISTRY ?= gitlab.com/ska-telescope/tango-example
+CI_REGISTRY ?= gitlab.com/ska-telescope/tangosnmp
 
 CI_PROJECT_DIR ?= .
 

@@ -13,11 +13,14 @@ all: test
 #
 # Note $$ to let bash resolve the variable instead of make.
 #
-test:
+test: install
 	retry --max=10 -- tango_admin --ping-device ab/ab/simulator
 	for t in *.py; do \
 		script --flush --quiet --return "$$t".stdout --command "pytest \"$$t\" "; \
 	done
-
+# TODO copy test artifacts
 
 .PHONY: all test
+
+install:
+	pip3 install -r test_requirements.txt
