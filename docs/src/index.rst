@@ -24,21 +24,3 @@
 
    ../../README
 
-.. COMMUNITY SECTION ==================================================
-
-..
-
-.. toctree::
-  :maxdepth: 2
-  :caption: Package name
-  :hidden:
-
-  package/guide
-
-
-Project-name documentation HEADING
-==================================
-
-These are all the packages, functions and scripts that form part of the project.
-
-- :doc:`package/guide`
