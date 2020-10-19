@@ -16,7 +16,7 @@ variables:
         - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
 
 stages:
-    - infrastructure
+    - compile
     - build
     - linting
     - test
@@ -46,43 +46,49 @@ builder:
 # Update the "tangosnmp-tester" image which is used to run tests.
 # This only needs to be done when the tester needs new stuff
 # (e.g. use a newer version of libsnmp/g++)
-tester:
-    image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
-    services:
-        - docker:dind
-    extends: .common
-    stage: infrastructure
-    when: manual
-    script:
-        - cd docker/tester
-        - export DOCKER_REGISTRY_USER=ska-docker
-        - ./build_tester.sh push
+#tester:
+#    image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
+#    services:
+#        - docker:dind
+#    extends: .common
+#    stage: infrastructure
+#    when: manual
+#    script:
+#        - cd docker/tester
+#        - export DOCKER_REGISTRY_USER=ska-docker
+#        - ./build_tester.sh push
 
-build_release:
-    extends: .common
+# compile C++ code, creating an executable that will later be packaged into a docker image
+compile:
     image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-builder
-    stage: build
-    before_script:
-        # these finds were used for figuring out what is installed in which docker image
-        - find / -iname 'tango.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-        - find / -iname 'libtango.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-        - find / -iname 'net-snmp-includes.h' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-        - find / -iname 'libsnmp.so' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
-        - find /usr -iname 'g++' -o -iname 'c++' -o -iname 'clang++' 2>/dev/null || echo 'find exited with non-zero, continue anyway'
+    stage: compile
     script:
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Release
-        - make
-          # the below is taken from the test_install job, I can't get it to work in that job...
-          # (it tries to rebuild, but lacking the headers it can't - but it shouldn't need to rebuild...)
-        - cmake . -DCMAKE_INSTALL_PREFIX=../docker
         - make install
+    cache:
+        paths:
+            - build
     artifacts:
         paths:
             - build
-            - docker
 
+# build docker image
+build:
+  stage: build
+  tags:
+    - k8srunner
+  script:
+    - if [ -d "build" ]; then ls -la build; for item in $(ls build); do
+    - echo "+++ Contents of $item ++++";
+    - if [ -d "build/$item" ]; then echo "$item is a directory"; else
+    - cat build/$item; fi; done; fi
+    - make build
+  artifacts:
+    when: always
+    paths:
+      - build
 #test_tango:
 #  image: nexus.engageska-portugal.pt/ska-docker/tango-cpp
 #  stage: test
@@ -103,10 +109,8 @@ build_release:
 
 test image:
     tags:
-        - shell
+        - k8srunner
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
-    services:
-        - docker:dind
     stage: test
     #dependencies:
     #    - build_release
@@ -118,69 +122,43 @@ test image:
         paths:
             - build
 
-#try perentie server:
-#  tags: [perentie]
-#  image: nexus.engageska-portugal.pt/ska-docker/tango-builder
-#  stage: build
-#  script:
-#      - hostname
-
-publish image:
-    tags:
-        - engageska, shell
-    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-    stage: publish
-    dependencies:
-        - build_release
-    script:
-        - cd docker
-        - make push
-    when: manual
-
-pages:
-    extends: .common
-    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
-    stage: pages
-    dependencies:
-        - test image
-    before_script:
-        - apt update && apt install -y curl
-    script:
-        - mkdir -p .public/build/reports
-        - cd .public
-        - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
-        - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --xml -o build/reports/code-coverage.xml
-          # these steps fail because ctest currently does no tests, hence no report
-          #- cp ../build/ctest.xml build/reports/unit-tests.xml
-          # Create and upload GitLab badges
-          #- python ../.produce-ci-metrics.py build/reports > ci-metrics.json
-        - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
-        - cd ..
-        - mv .public public
-    artifacts:
-        paths:
-            - public
-
-
-###################################################
-# Below are parts of the template that don't work  / don't do anything useful
-# (I haven't tried to make them work yet)
 #
-##################################################
+#publish image:
+#    tags:
+#        - engageska, shell
+#    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+#    stage: publish
+#    dependencies:
+#        - build_release
+#    script:
+#        - cd docker
+#        - make push
+#    when: manual
+#
+#pages:
+#    extends: .common
+#    image: nexus.engageska-portugal.pt/ska-docker/cpp_build_base
+#    stage: pages
+#    dependencies:
+#        - test image
+#    before_script:
+#        - apt update && apt install -y curl
+#    script:
+#        - mkdir -p .public/build/reports
+#        - cd .public
+#        - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --html --html-details -o index.html
+#        - gcovr -r ../ -e '.*/external/.*' -e '.*/CompilerIdCXX/.*' -e '.*/tests/.*' --xml -o build/reports/code-coverage.xml
+#          # these steps fail because ctest currently does no tests, hence no report
+#          #- cp ../build/ctest.xml build/reports/unit-tests.xml
+#          # Create and upload GitLab badges
+#          #- python ../.produce-ci-metrics.py build/reports > ci-metrics.json
+#        - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
+#        - cd ..
+#        - mv .public public
+#    artifacts:
+#        paths:
+#            - public
 
-#build_debug:
-#      extends: .common
-#  stage: build
-#  # instead of calling g++ directly you can also use some build toolkit like make
-#  # install the necessary build tools when needed
-#  script:
-#    - mkdir build
-#    - cd build
-#    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-coverage" -DCMAKE_EXE_LINKER_FLAGS="-coverage"
-#    - make
-#  artifacts:
-#    paths:
-#      - build
 
 ctest:
     tags:
@@ -201,104 +179,3 @@ ctest:
             - build/
         reports:
             junit: build/ctest.xml
-
-#
-#build_export_compile_commands:
-#    # extends: .common
-# stage: build
-# script:
-#    - rm -rf build && mkdir build
-#    - cd build
-#      #- cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=clang++
-# artifacts:
-#    paths:
-#      - build
-
-#lint_clang_tidy:
-#    #  extends: .common
-#  stage: linting
-#  dependencies:
-#    - build_export_compile_commands
-#  script:
-#    - cd build
-#    - run-clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,google-*'
-
-#lint_iwyu:
-#    #  extends: .common
-#  stage: linting
-#  dependencies:
-#    - build_export_compile_commands
-#  script:
-#    - cd build
-#    - iwyu_tool -p .
-
-#lint_cppcheck:
-#    #  extends: .common
-#  stage: linting
-#  dependencies:
-#    - build_export_compile_commands
-#  script:
-#    - cd build
-#    - cppcheck --error-exitcode=1 --project=compile_commands.json -q --std=c++14 -i $PWD/../external -i $PWD/../src/ska/helloworld/test
-#test_installation:
-#    #  extends: .common
-#  stage: test
-#  dependencies:
-#    - build_release
-#  script:
-#    - cd build
-#    - make --version
-#    # make will try (and fail) to rebuild because the source is newer than the build
-#    # so we make the build look nice and fresh
-#    - find . -type f -exec touch {} +
-#    # this ls is for CI debugging only
-#    - ls .. -laR > ls_before_cmake.txt
-#    - cmake . -DCMAKE_INSTALL_PREFIX=/opt
-#    - find . -type f -exec touch {} +
-#    - find . -type f -name '*.make' -exec touch {} +
-#    - find . -type f -name '*.o' -exec touch {} +
-#    - find . -type f -name 'link.txt' -exec touch {} +
-#    - touch bin/TangoSnmp
-#    - ls .. -laR > ls_after_cmake.txt
-#    - make install --trace -d
-#     # artifacts for CI debugging
-#  artifacts:
-#      when: always
-#      paths:
-#          - build
-#   ### Below is from cpp-template original test_install step
-#   - cd ../examples/helloworld-user
-#    - if [ -d build ]; then rm -rf build; fi
-#    - mkdir build
-#    - cd build
-#    - cmake .. -DCMAKE_PREFIX_PATH=/opt
-#    - make all
-
-#test_as_subproject:
-#    #  extends: .common
-#  stage: test
-#  script:
-#    - cp -r examples/helloworld-user ..
-#    - cd ../helloworld-user
-#    - sed -i 's/find_package(HelloWorld)/add_subdirectory(..\/cpp-template helloworld EXCLUDE_FROM_ALL)/' CMakeLists.txt
-#    - if [ -d build ]; then rm -rf build; fi
-#    - mkdir build
-#    - cd build
-#    - cmake ..
-#    - make all
-
-# A job that runs the tests under valgrid
-# It might take a while, so not always run by default
-#test_memcheck:
-#    #  extends: .common
-#  stage: test
-#  dependencies:
-#    - build_debug
-#  before_script:
-#    - apt update && apt install -y valgrind
-#  script:
-#    - cd build
-#    - ctest -T memcheck
-#  only:
-#    - tags
-#    - schedules
