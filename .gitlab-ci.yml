@@ -1,4 +1,6 @@
-# This file is a mash-up between the SKA cpp-template and other tango projects.
+# This file started as a mash-up between the SKA cpp-template and tango-example.
+
+image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
 
 variables:
     # Needed if you want automatic submodule checkout
@@ -19,7 +21,6 @@ stages:
 # This only needs to be done when tango-builder is updated,
 # or to use a newer version of libsnmp/g++.
 builder:
-    image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     tags: 
         - k8srunner
     stage: compile
@@ -97,8 +98,6 @@ test image:
         - k8srunner
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     stage: test
-    #dependencies:
-    #    - build_release
     script:
         - cd docker
         - make build
