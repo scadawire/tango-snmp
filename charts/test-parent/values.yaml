@@ -4,7 +4,7 @@ minikube: true
 
 global:
   labels:
-    app: low-cbf-gemini
+    app: tangosnmp
   annotations:
     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
