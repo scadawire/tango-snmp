@@ -20,7 +20,8 @@ stages:
 # or to use a newer version of libsnmp/g++.
 builder:
     image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
-    tags: k8srunner
+    tags: 
+        - k8srunner
     stage: compile
     when: manual
     script:
