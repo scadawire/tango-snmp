@@ -68,7 +68,7 @@ build:
   tags:
     - k8srunner
   script:
-    - if [ -d "build" ]; then ls -laR build; fi
+    - ls -la build/bin/TangoSnmp
     - make build
   artifacts:
     when: always
