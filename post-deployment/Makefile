@@ -5,7 +5,7 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = snmpsimd.txt pytest.stdout
+TEST_ARTIFACTS = snmpsimd.stdout snmpsimd.stderr pytest.stdout
 #report.xml report.json cucumber.json pytest-logs.txt coverage.xml htmlcov
 
 all: test 
@@ -17,13 +17,14 @@ all: test
 # Note $$ to let bash resolve the variable instead of make.
 #
 # Removed pytest coverage tests because they can't possibly work (we're testing a compiled C++ binary!)
-#snmpsimd.py --data-dir=. --agent-udpv4-endpoint=127.0.0.1:1024 | tee snmpsimd.txt &
 test: install
+	snmpsimd.py --data-dir=. --agent-udpv4-endpoint=127.0.0.1:1024 > snmpsimd.stdout 2> snmpsimd.stderr &
 	echo "dummy snmp log" > snmpsimd.txt # FIXME - only while we're not running the simulator
 	echo "dummy pytest output" > pytest.stdout # FIXME
 	echo "pwd is " `pwd`
 	ls -la
 	ls -la tests
+	cat tests/test_01.py
 	mkdir -p build
 	PYTHONPATH=/app:/app/testing:/app/testing/post-deployment pytest $(if $(findstring all,$(MARK)),, -m $(MARK)) --disable-pytest-warnings | tee pytest.stdout; \
     status=$$?; \
