@@ -1,6 +1,10 @@
 import tango
 import unittest
 
+def test_null():
+    assert True == True
+
+
     # TODO - refactor to use testing framework properly (Check what other SKA tango uses!)
 
 class MyTestCase(unittest.TestCase):
