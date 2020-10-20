@@ -35,7 +35,8 @@ deviceServers:
     domain: tangosnmp
     args:
       - -c
-      - "if [ -d /root/.snmp/mibs ]; then echo 'found mibs' && ls -la /root/.snmp/mibs ; else echo 'no mibs!'; fi && \
+      - "mkdir -p /home/tango/.snmp && ln -s charts/data/mibs /home/tango/.snmp/mibs && \
+         if [ -d /home/tango/.snmp/mibs ]; then echo 'found mibs' && ls -la /home/tango/.snmp/mibs ; else echo 'no mibs!'; fi && \
          TangoSnmp andrew"
     depends_on:
       - device: sys/database/2
