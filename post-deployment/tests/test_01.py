@@ -30,17 +30,16 @@ class TestNoComms:
     def test_init(self, no_comms):
         no_comms.init()
         assert no_comms.state() == tango.DevState.ON
-#    def test_attr_fail(self, no_comms):
-#        with pytest.raises(tango.DevFailed) as context:
-#            # this attribute is specified in the DynamicAttributes 
-#            x = no_comms.one
-#        e = context.exception
-#        # DevFailed exception should contain two 'DevError's
-#        # args[0] from TangoSnmp (timeout)
-#        # args[1] from DeviceProxy (can't read attribute)
-#        assert e.args[0].reason=='TangoSnmp_SnmpError'
-#        assert e.args[1].reason=='API_AttributeFailed'
-#        assert no_comms.state()==tango.DevState.ON
+    def test_attr_fail(self, no_comms):
+        with pytest.raises(tango.DevFailed) as e:
+            # this attribute is specified in the DynamicAttributes 
+            x = no_comms.one
+        # DevFailed exception should contain two 'DevError's
+        # args[0] from TangoSnmp (timeout)
+        # args[1] from DeviceProxy (can't read attribute)
+        assert e.value.args[0].reason=='TangoSnmp_SnmpError'
+        assert e.value.args[1].reason=='API_AttributeFailed'
+        assert no_comms.state()==tango.DevState.ON
     def test_attr_not_exist(self, no_comms):
         with pytest.raises(AttributeError) as e:
             # this attribute is NOT specified in the DynamicAttributes 
