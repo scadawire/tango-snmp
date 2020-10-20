@@ -11,8 +11,10 @@ RUN cat /etc/apt/sources.list | sed 's/main$/main contrib non-free/' > /etc/apt/
     export DEBIAN_FRONTEND=noninteractive && apt update && \
     apt install -y libsnmp-dev snmp-mibs-downloader && \
     apt clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-#WORKDIR /usr/local/bin
 COPY build/bin/TangoSnmp /usr/local/bin
+
+# this should install snmpsim, for use in testing
+RUN pip install -e . --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple
 
 USER tango
 ENTRYPOINT ["/app/entrypoint.sh"]

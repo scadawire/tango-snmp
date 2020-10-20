@@ -37,7 +37,8 @@ setuptools.setup(
         'Programming Language :: Python :: 3.6',
     ],
     #test_suite='tests',
-    install_requires=['pytango == 9.3.1'],  
+    install_requires=['pytango == 9.3.1',
+        'snmpsim'],  
     setup_requires=[] + pytest_runner,
     tests_require=[
         'pytest',

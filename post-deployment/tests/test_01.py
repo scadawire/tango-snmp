@@ -31,10 +31,9 @@ class TestNoComms:
         no_comms.init()
         assert no_comms.state() == tango.DevState.ON
     def test_attr_fail(self, no_comms):
-        with pytest.raises(tango.DevFailed) as context:
+        with pytest.raises(tango.DevFailed) as e:
             # this attribute is specified in the DynamicAttributes 
             x = no_comms.one
-        e = context.exception
         # DevFailed exception should contain two 'DevError's
         # args[0] from TangoSnmp (timeout)
         # args[1] from DeviceProxy (can't read attribute)
@@ -42,10 +41,9 @@ class TestNoComms:
         assert e.args[1].reason=='API_AttributeFailed'
         assert no_comms.state()==tango.DevState.ON
     def test_attr_not_exist(self, no_comms):
-        with pytest.raises(AttributeError) as context:
+        with pytest.raises(AttributeError) as e:
             # this attribute is NOT specified in the DynamicAttributes 
             x = no_comms.attribute_that_doesnt_exist
-        e = context.exception
         assert no_comms.state()==tango.DevState.ON
     def test_simulation(self):
         no_comms.GlobalSimulationEnable(True)

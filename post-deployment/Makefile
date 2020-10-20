@@ -5,7 +5,7 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = snmpsimd.stdout snmpsimd.stderr pytest.stdout
+TEST_ARTIFACTS = pytest.stdout
 #report.xml report.json cucumber.json pytest-logs.txt coverage.xml htmlcov
 
 all: test 
@@ -18,8 +18,6 @@ all: test
 #
 # Removed pytest coverage tests because they can't possibly work (we're testing a compiled C++ binary!)
 test: install
-	snmpsimd.py --data-dir=. --agent-udpv4-endpoint=127.0.0.1:1024 > snmpsimd.stdout 2> snmpsimd.stderr &
-	echo "dummy snmp log" > snmpsimd.txt # FIXME - only while we're not running the simulator
 	echo "dummy pytest output" > pytest.stdout # FIXME
 	echo "pwd is " `pwd`
 	ls -la
