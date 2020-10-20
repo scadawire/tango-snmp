@@ -52,10 +52,10 @@ class TestNoComms:
         assert no_comms.one==20
         assert no_comms.one==30
 
-#@pytest.mark.usefixtures("simulator")
-#class TestSnmpSimulatorComms:
-#    def test_on(self, simulator):
-#        assert simulator.state()==tango.DevState.ON#, 'SNMP sim device ON')
+@pytest.mark.usefixtures("simulator")
+class TestSnmpSimulatorComms:
+    def test_on(self, simulator):
+        assert simulator.state()==tango.DevState.ON
 #    def test_snmp_read(self, simulator):
 #        # starting value of 42 is specified in one.snmprec config file
 #        assert simulator.one==42#, 'SNMP sim read')
