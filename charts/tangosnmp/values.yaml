@@ -35,11 +35,7 @@ deviceServers:
     domain: tangosnmp
     args:
       - -c
-      - "mkdir -p /home/tango/.snmp && ln -s /app/charts/tangosnmp/data/mibs /home/tango/.snmp/mibs && \
-         ls -laH /home/tango && \
-         (snmpsimd.py --data-dir=. --agent-udpv4-endpoint=127.0.0.1:1024 & ) && \
-         if [ -d /home/tango/.snmp/mibs ]; then echo 'found mibs' && ls -la /home/tango/.snmp/mibs ; else echo 'no mibs!'; fi && \
-         TangoSnmp andrew"
+      - "SNMP_SIMULATOR=1 /app/entrypoint.sh TangoSnmp andrew"
     depends_on:
       - device: sys/database/2
     image:
