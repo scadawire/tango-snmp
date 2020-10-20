@@ -18,11 +18,6 @@ all: test
 #
 # Removed pytest coverage tests because they can't possibly work (we're testing a compiled C++ binary!)
 test: install
-	echo "dummy pytest output" > pytest.stdout # FIXME
-	echo "pwd is " `pwd`
-	ls -la
-	ls -la tests
-	cat tests/test_01.py
 	mkdir -p build
 	PYTHONPATH=/app:/app/testing:/app/testing/post-deployment pytest $(if $(findstring all,$(MARK)),, -m $(MARK)) --disable-pytest-warnings | tee pytest.stdout; \
     status=$$?; \
