@@ -45,13 +45,13 @@ class TestNoComms:
             # this attribute is NOT specified in the DynamicAttributes 
             x = no_comms.attribute_that_doesnt_exist
         assert no_comms.state()==tango.DevState.ON
-#    def test_simulation(self):
-#        no_comms.GlobalSimulationEnable(True)
-#        # in simulation mode, returned value increments by 10 each time
-#        assert no_comms.one==10
-#        assert no_comms.one==20
-#        assert no_comms.one==30
-#
+    def test_simulation(self, no_comms):
+        no_comms.GlobalSimulationEnable(True)
+        # in simulation mode, returned value increments by 10 each time
+        assert no_comms.one==10
+        assert no_comms.one==20
+        assert no_comms.one==30
+
 #@pytest.mark.usefixtures("simulator")
 #class TestSnmpSimulatorComms:
 #    def test_on(self, simulator):
