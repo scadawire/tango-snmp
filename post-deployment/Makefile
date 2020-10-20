@@ -24,7 +24,11 @@ test: install
 	echo "pwd is " `pwd`
 	ls -la
 	ls -la tests
-	pytest --disable-pytest-warnings > pytest.stdout
+	mkdir -p build
+	PYTHONPATH=/app:/app/testing:/app/testing/post-deployment pytest $(if $(findstring all,$(MARK)),, -m $(MARK)) --disable-pytest-warnings | tee pytest.stdout; \
+    status=$$?; \
+    $(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+    exit $$status
 
 #####
 # old Makefile test script below
