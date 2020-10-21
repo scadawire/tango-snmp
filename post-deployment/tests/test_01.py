@@ -56,24 +56,23 @@ class TestNoComms:
 class TestSnmpSimulatorComms:
     def test_on(self, simulator):
         assert simulator.state()==tango.DevState.ON
-#    def test_snmp_read(self, simulator):
-#        # starting value of 42 is specified in one.snmprec config file
-#        assert simulator.one==42#, 'SNMP sim read')
-#    def test_simulation(self, simulator):
-#        # this is the Tango device simulation 
-#        # (i.e. it does not communicate over SNMP)
-#        simulator.GlobalSimulationEnable(True)
-#        assert simulator.one==10#, 'tango device simulation enabled'
-#        simulator.GlobalSimulationEnable(False)
-#        assert simulator.one==42#, 'tango device simulation disabled')
-#    def test_sim_ignores_write(self, simulator):
-#        #simulator.Init()
-#        simulator.GlobalSimulationEnable(True)
-#        simulator.one = 888    
-#        assert simulator.one!=888#, 'tango device simulation ignore write')
-#        simulator.GlobalSimulationEnable(False)
-#        assert simulator.one==42#, 'tango device simulation disabled')
-#    def test_snmp_write(self, simulator):
-#        # this write should go to the SNMP protocol simulator and then be read back
-#        simulator.one = 84    
-#        assert simulator.one==84
+    def test_snmp_read(self, simulator):
+        # starting value of 42 is specified in one.snmprec config file
+        assert simulator.one==42
+    def test_simulation(self, simulator):
+        # this is the Tango device simulation 
+        # (i.e. it does not communicate over SNMP)
+        simulator.GlobalSimulationEnable(True)
+        assert simulator.one==10
+        simulator.GlobalSimulationEnable(False)
+        assert simulator.one==42
+    def test_sim_ignores_write(self, simulator):
+        simulator.GlobalSimulationEnable(True)
+        simulator.one = 888    
+        assert simulator.one!=888
+        simulator.GlobalSimulationEnable(False)
+        assert simulator.one==42
+    def test_snmp_write(self, simulator):
+        # this write should go to the SNMP protocol simulator and then be read back
+        simulator.one = 84    
+        assert simulator.one==84
