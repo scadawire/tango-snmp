@@ -1,0 +1,14 @@
+apiVersion: v2
+name: tangosnmp-test-parent
+description: Helm parent chart for TangoSnmp Device tests
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+dependencies:
+- name: tango-base
+  version: 0.2.2
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+- name: tangosnmp
+  version: 0.0.1
+  repository: file://../tangosnmp
