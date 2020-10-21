@@ -2,6 +2,7 @@ import pytest
 import tango
 from tango import Database, DeviceProxy
 
+
 @pytest.fixture(scope="class")
 def no_comms():
     dev = DeviceProxy("no/comms/device")
@@ -20,59 +21,69 @@ class TestDb:
         db = tango.Database()
         sl = db.get_server_list("{}*".format(_my_server))
         assert len(sl) > 0
+
     def test_not_exported(self):
         not_exp = tango.DeviceProxy("not/exported/device")
         with pytest.raises(tango.ConnectionFailed):
             x = not_exp.state()
+
 
 @pytest.mark.usefixtures("no_comms")
 class TestNoComms:
     def test_init(self, no_comms):
         no_comms.init()
         assert no_comms.state() == tango.DevState.ON
+
     def test_attr_fail(self, no_comms):
         with pytest.raises(tango.DevFailed) as e:
-            # this attribute is specified in the DynamicAttributes 
+            # this attribute is specified in the DynamicAttributes
             x = no_comms.one
         # DevFailed exception should contain two 'DevError's
         # args[0] from TangoSnmp (timeout)
         # args[1] from DeviceProxy (can't read attribute)
-        assert e.value.args[0].reason=='TangoSnmp_SnmpError'
-        assert e.value.args[1].reason=='API_AttributeFailed'
-        assert no_comms.state()==tango.DevState.ON
+        assert e.value.args[0].reason == "TangoSnmp_SnmpError"
+        assert e.value.args[1].reason == "API_AttributeFailed"
+        assert no_comms.state() == tango.DevState.ON
+
     def test_attr_not_exist(self, no_comms):
         with pytest.raises(AttributeError) as e:
-            # this attribute is NOT specified in the DynamicAttributes 
+            # this attribute is NOT specified in the DynamicAttributes
             x = no_comms.attribute_that_doesnt_exist
-        assert no_comms.state()==tango.DevState.ON
+        assert no_comms.state() == tango.DevState.ON
+
     def test_simulation(self, no_comms):
         no_comms.GlobalSimulationEnable(True)
         # in simulation mode, returned value increments by 10 each time
-        assert no_comms.one==10
-        assert no_comms.one==20
-        assert no_comms.one==30
+        assert no_comms.one == 10
+        assert no_comms.one == 20
+        assert no_comms.one == 30
+
 
 @pytest.mark.usefixtures("simulator")
 class TestSnmpSimulatorComms:
     def test_on(self, simulator):
-        assert simulator.state()==tango.DevState.ON
+        assert simulator.state() == tango.DevState.ON
+
     def test_snmp_read(self, simulator):
         # starting value of 42 is specified in one.snmprec config file
-        assert simulator.one==42
+        assert simulator.one == 42
+
     def test_simulation(self, simulator):
-        # this is the Tango device simulation 
+        # this is the Tango device simulation
         # (i.e. it does not communicate over SNMP)
         simulator.GlobalSimulationEnable(True)
-        assert simulator.one==10
+        assert simulator.one == 10
         simulator.GlobalSimulationEnable(False)
-        assert simulator.one==42
+        assert simulator.one == 42
+
     def test_sim_ignores_write(self, simulator):
         simulator.GlobalSimulationEnable(True)
-        simulator.one = 888    
-        assert simulator.one!=888
+        simulator.one = 888
+        assert simulator.one != 888
         simulator.GlobalSimulationEnable(False)
-        assert simulator.one==42
+        assert simulator.one == 42
+
     def test_snmp_write(self, simulator):
         # this write should go to the SNMP protocol simulator and then be read back
-        simulator.one = 84    
-        assert simulator.one==84
+        simulator.one = 84
+        assert simulator.one == 84
