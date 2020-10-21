@@ -12,7 +12,7 @@ mkdir -p /home/tango/.snmp && ln -s /app/charts/tangosnmp/data/mibs /home/tango/
 
 if [ "$1" = 'TangoSnmp' ]; then
     if [ -n "$SNMP_SIMULATOR" ] && [ "$SNMP_SIMULATOR" -ne 0 ]; then
-        snmpsimd.py --data-dir=. --agent-udpv4-endpoint=127.0.0.1:1024 &
+        snmpsimd.py --data-dir=/app/post-deployment --agent-udpv4-endpoint=127.0.0.1:1024 --variation-modules-dir=/usr/local/snmpsim/variation &
     fi
     
     if [ -d /home/tango/.snmp/mibs ]; then 
