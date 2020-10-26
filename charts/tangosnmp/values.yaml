@@ -33,9 +33,8 @@ deviceServers:
   - name: tangosnmp
     function: snmp-test
     domain: tangosnmp
-    args:
-      - -c
-      - "SNMP_SIMULATOR=1 /app/entrypoint.sh TangoSnmp andrew"
+    command: "SNMP_SIMULATOR=1 /app/entrypoint.sh TangoSnmp"
+    instances: ["andrew"]
     depends_on:
       - device: sys/database/2
     image:
