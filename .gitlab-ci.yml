@@ -83,16 +83,16 @@ test:
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
   script:
     - kubectl version
-  #  - make install-chart
-  #  - make wait
-  #  - make smoketest
-  #  - make test
-  #  after_script:
-  #  - make uninstall-chart
-  #  - make delete_namespace
-  #  - mkdir -p build
-  #  - cp -rf charts/build/* build/
-  #  - ls -la build
+    - make install-chart
+    - make wait
+    - make smoketest
+    - make test
+  after_script:
+    - make uninstall-chart
+    - make delete_namespace
+    - mkdir -p build
+    - cp -rf charts/build/* build/
+    - ls -la build
   environment:
     name: test
     kubernetes:
@@ -103,14 +103,3 @@ test:
       - build
     reports:
       junit: build/report.xml
-
-
-
-publish:
-  stage: publish
-  tags:
-    - k8srunner
-  script:
-    - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
-    - make build
-    - make push
