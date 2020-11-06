@@ -112,6 +112,8 @@ pages:
   script:
    - ls -la
    - mkdir .public
+   # fake files we don't actually generate in tangosnmp
+   - touch build/coverage.xml
    - cp build/coverage.xml .public
    - cp -r build/htmlcov/* .public
    - mv .public public
