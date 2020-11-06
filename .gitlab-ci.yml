@@ -40,8 +40,6 @@ compile:
     image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-builder
     stage: compile
     script:
-        - git submodule sync
-        - git submodule update --init
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Release
