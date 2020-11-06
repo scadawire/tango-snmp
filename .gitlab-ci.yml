@@ -8,6 +8,7 @@ variables:
     GIT_SUBMODULE_STRATEGY: normal
     IMAGE_NAME: tangosnmp-test
     DOCKER_DRIVER: overlay2
+    CHARTS_TO_PUBLISH: tangosnmp
 
 stages:
     - compile
@@ -140,8 +141,8 @@ move-test-artifacts:
       - build
 
 # Standardised included jobs
-variables:
-  CHARTS_TO_PUBLISH: tangosnmp
+#variables: ### see variables at top of file.
+#  CHARTS_TO_PUBLISH: tangosnmp
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-s»
