@@ -115,7 +115,7 @@ pages:
    # fake files we don't actually generate in tangosnmp
    - touch build/coverage.xml
    - cp build/coverage.xml .public
-   - cp -r build/htmlcov/* .public
+   #- cp -r build/htmlcov/* .public
    - mv .public public
   when: always
   allow_failure: true
