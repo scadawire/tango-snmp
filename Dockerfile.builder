@@ -1,8 +1,5 @@
 # Attempt at creating a TangoSnmp builder image
-#
-ARG DOCKER_REGISTRY_USER
-ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:latest as buildenv
+FROM artefact.skao.int/ska-tango-images-tango-cpp:9.3.9
 
 USER root
 
