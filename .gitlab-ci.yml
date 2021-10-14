@@ -49,34 +49,6 @@ compile:
         paths:
             - build
 
-# build docker image
-build:
-  stage: build
-  tags:
-    - k8srunner
-  before_script:
-    - docker login -u $CAR_OCI_REGISTRY_USERNAME -p $CAR_OCI_REGISTRY_PASSWORD $CAR_OCI_REGISTRY_HOST
-  script:
-    - ls -la build/bin/TangoSnmp
-    - make build
-    - make push
-  artifacts:
-    when: always
-    paths:
-      - build
-
-lint-check-chart:
-  stage: lint
-  tags:
-    - k8srunner
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  script:
-    - make helm_dependencies
-    - make chart_lint
-  artifacts:
-    paths:
-      - build
-
 test:
   stage: test
   tags:
@@ -105,25 +77,6 @@ test:
     reports:
       junit: build/report.xml
 
-pages:
-  stage: pages
-  tags:
-    - k8srunner
-  script:
-   - ls -la
-   - mkdir .public
-   # fake files we don't actually generate in tangosnmp
-   - touch build/coverage.xml
-   - cp build/coverage.xml .public
-   #- cp -r build/htmlcov/* .public
-   - mv .public public
-  when: always
-  allow_failure: true
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-
 # *********************************************
 # The ci badges are generated from the test results found in specified paths.
 # First we need to copy the test result files to the correct paths:
@@ -150,8 +103,13 @@ move-test-artifacts:
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-s»
+#- project: 'ska-telescope/templates-repository'
+#  file: 'gitlab-ci/includes/helm_publish.yml'
+
+# OCI image
 - project: 'ska-telescope/templates-repository'
-  file: 'gitlab-ci/includes/helm_publish.yml'
+  file: 'gitlab-ci/includes/oci-image.gitlab-ci.yml'
+
 
 # Create Gitlab CI badges from CI metrics
 # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci»
