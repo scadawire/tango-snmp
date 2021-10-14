@@ -1,6 +1,6 @@
 # This file started as a mash-up between the SKA cpp-template and tango-example.
 
-image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
+image: artefact.skao.int/ska-low-cbf-tangosnmp-builder:latest
 
 variables:
     # Needed if you want automatic submodule checkout
@@ -29,7 +29,7 @@ builder:
     script:
         - cd docker
         - export DOCKER_REGISTRY_USER=ska-docker
-        - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USER/tangosnmp-builder
+        - export IMAGE=artefact.skao.int/ska-low-cbf-tangosnmp-builder
         - export VERSION=`date +"%Y-%m-%d"`
         - docker build -t ${IMAGE}:${VERSION} . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
         - docker push ${IMAGE}:${VERSION}
@@ -38,7 +38,7 @@ builder:
 
 # compile C++ code, creating an executable that will later be packaged into a docker image
 compile:
-    image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-builder
+    image: artefact.skao.int/ska-low-cbf-tangosnmp-builder
     stage: compile
     script:
         - mkdir build
@@ -69,7 +69,7 @@ lint-check-chart:
   stage: lint
   tags:
     - k8srunner
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
     - make helm_dependencies
     - make chart_lint
@@ -81,7 +81,7 @@ test:
   stage: test
   tags:
     - k8srunner
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
     - kubectl version
     - make install-chart
@@ -131,7 +131,7 @@ move-test-artifacts:
   stage: publish
   tags:
     - k8srunner
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
     - mkdir build/reports
     - mv build/report.xml build/reports/unit-tests.xml
