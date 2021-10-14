@@ -1,6 +1,5 @@
 # This file started as a mash-up between the SKA cpp-template and tango-example.
 
-#image: artefact.skao.int/ska-low-cbf-tangosnmp-builder:latest
 image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
 
 variables:
@@ -39,7 +38,8 @@ builder:
 
 # compile C++ code, creating an executable that will later be packaged into a docker image
 compile:
-    image: artefact.skao.int/ska-low-cbf-tangosnmp-builder
+    #image: artefact.skao.int/ska-low-cbf-tangosnmp-builder
+    image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
     stage: compile
     script:
         - mkdir build
