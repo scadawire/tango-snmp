@@ -38,7 +38,7 @@ create builder OCI image:
 
 # compile C++ code, creating an executable that will later be packaged into a docker image
 compile:
-    image: registry.gitlab.com/ska-telescope/tangosnmp-builder:0.0.1
+    image: registry.gitlab.com/ska-telescope/tangosnmp/builder:0.0.1
     stage: compile
     script:
         - mkdir build
