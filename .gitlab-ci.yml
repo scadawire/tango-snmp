@@ -34,7 +34,7 @@ create builder OCI image:
   rules:
     - changes:
       - build_builder.sh
-      - Dockerfile.build
+      - Dockerfile.builder
 
 # compile C++ code, creating an executable that will later be packaged into a docker image
 compile:
