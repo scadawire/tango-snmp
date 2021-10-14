@@ -1,6 +1,7 @@
 # This file started as a mash-up between the SKA cpp-template and tango-example.
 
-image: artefact.skao.int/ska-low-cbf-tangosnmp-builder:latest
+#image: artefact.skao.int/ska-low-cbf-tangosnmp-builder:latest
+image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
 
 variables:
     # Needed if you want automatic submodule checkout
