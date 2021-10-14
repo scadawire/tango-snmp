@@ -16,7 +16,7 @@ with open('README.md') as readme_file:
 
 setuptools.setup(
     name='tangosnmp',
-    version='0.0.1',
+    version='0.0.2',
     description="",
     long_description=readme + '\n\n',
     url='https://github.com/ska-telescope/tangosnmp',
@@ -32,12 +32,12 @@ setuptools.setup(
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     #test_suite='tests',
-    install_requires=['pytango == 9.3.1',
+    install_requires=['pytango >= 9.3.3',
         'snmpsim'],  
     setup_requires=[] + pytest_runner,
     tests_require=[
