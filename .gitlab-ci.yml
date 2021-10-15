@@ -58,11 +58,11 @@ test:
     - kubectl version
     - make install-chart
     - make wait
-    - make smoketest
-    - make test
+    - make smoke-test
+    - make k8s-test
   after_script:
     - make uninstall-chart
-    - make delete_namespace
+    - make delete-namespace
     - mkdir -p build
     - cp -rf charts/build/* build/
     - ls -la build
