@@ -1,0 +1,56 @@
+name: "subarray-{{.Release.Name}}"
+function: ska-low-cbf-snmp
+domain: ska-low-cbf
+command: "SNMP_SIMULATOR=1 /app/entrypoint.sh TangoSnmp"
+instances: ["andrew"]
+server:
+  name: "TangoSnmp"
+  instances:
+    - name: "andrew"
+      classes:
+      - name: "TangoSnmp"
+        devices:
+        - name: "ab/ab/simulator"
+          properties:
+          - name: "AgentIpAddr"
+            values:
+            - "127.0.0.1:1024"
+          - name: "DynamicAttributes"
+            values:
+            - "one=SIMULATOR-MIB:simulator.1.1,devlong,READ_WRITE,one thing,units,%d"
+          - name: "community"
+            values:
+            - "one"
+        - name: "no/comms/device"
+          properties:
+          - name: "AgentIpAddr"
+            values:
+            - "192.0.2.2"
+          - name: "DynamicAttributes"
+            values:
+            - "one=SIMULATOR-MIB:simulator.1.1,devlong,READ_WRITE,nothing,units,%d"
+          - name: "community"
+            values:
+            - "no_community"
+    - name: "do_not_run_this_one"
+      classes:
+      - name: "TangoSnmp"
+        devices:
+        - name: "not/exported/device"
+          properties:
+          - name: "AgentIpAddr"
+            values:
+            - "192.0.2.2"
+          - name: "DynamicAttributes"
+            values:
+            - "one=SIMULATOR-MIB:simulator.1.1,devlong,READ_WRITE,nothing,units,%d"
+          - name: "community"
+            values:
+            - "not_exported"
+depends_on:
+  - device: sys/database/2
+image:
+  registry: "{{.Values.cbf.image.registry}}"
+  image: "{{.Values.cbf.image.image}}"
+  tag: "{{.Values.cbf.image.tag}}"
+  pullPolicy: "{{.Values.cbf.image.pullPolicy}}"
