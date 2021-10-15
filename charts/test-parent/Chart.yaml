@@ -1,9 +1,9 @@
 apiVersion: v2
-name: tangosnmp-test-parent
+name: ska-low-cbf-snmp-test-parent
 description: Helm parent chart for TangoSnmp Device tests
 type: application
-version: 0.0.2
-appVersion: 0.0.2
+version: 0.0.3
+appVersion: 0.0.3
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: ska-tango-util
@@ -12,6 +12,6 @@ dependencies:
 - name: ska-tango-base
   version: 0.2.23
   repository: https://artefact.skao.int/repository/helm-internal
-- name: tangosnmp
+- name: ska-low-cbf-snmp
   version: 0.0.2
-  repository: file://../tangosnmp
+  repository: file://../ska-low-cbf-snmp

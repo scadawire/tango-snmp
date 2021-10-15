@@ -2,10 +2,10 @@ enabled: true
 
 telescope: SKA-low
 system: SW-infrastructure
-subsystem: snmp
+subsystem: ska-low-cbf
 
 labels:
-  app: tangosnmp
+  app: ska-low-cbf-snmp
 
 global:
   minikube: true
@@ -34,7 +34,7 @@ itango:
 snmp:
   image:
     registry: artefact.skao.int
-    image: tangosnmp
+    image: ska-low-cbf-snmp
     tag: 0.0.2
     pullPolicy: IfNotPresent
 

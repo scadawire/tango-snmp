@@ -1,20 +1,15 @@
 #
-# Project makefile for a Tango project. You should normally only need to modify
-# PROJECT below.
-#
-
-#
 # CAR_OCI_REGISTRY_HOST and PROJECT are combined to define
 # the Docker tag for this project. The definition below inherits the standard
 # value for CAR_OCI_REGISTRY_HOST = artefact.skao.int and overwrites
 # PROJECT to give a final Docker tag of
 # artefact.skao.int/ska-low-cbf-fpga/powersupply
 #
-PROJECT = tangosnmp
+PROJECT = ska-low-cbf-snmp
 
 # KUBE_NAMESPACE defines the Kubernetes Namespace that will be deployed to
 # using Helm.  If this does not already exist it will be created
-KUBE_NAMESPACE ?= tangosnmp
+KUBE_NAMESPACE ?= ska-low-cbf-snmp
 
 # RELEASE_NAME is the release that all Kubernetes resources will be labelled
 # with
@@ -43,8 +38,8 @@ DISPLAY ?= $(THIS_HOST):0
 JIVE ?= false# Enable jive
 WEBJIVE ?= false# Enable Webjive
 
-CI_PROJECT_PATH_SLUG ?= ska-low-cbf-fpga
-CI_ENVIRONMENT_SLUG ?= ska-low-cbf-fpga
+CI_PROJECT_PATH_SLUG ?= ska-low-cbf-snmp
+CI_ENVIRONMENT_SLUG ?= ska-low-cbf-snmp
 $(shell echo 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gilab_values.yaml)
 
 # define private overrides for above variables in here
@@ -64,19 +59,35 @@ include .make/oci.mk
 include .make/help.mk
 #include .make/docs.mk
 
+# Chart for testing
+K8S_CHARTS = test-parent
+
+# define private overrides for above variables in here
+#-include PrivateRules.mak
+
+# Single image in root of project
+OCI_IMAGES = ska-low-cbf-snmp
+
 # Test runner - run to completion job in K8s
 # name of the pod running the k8s_tests
 TEST_RUNNER = test-runner-$(CI_JOB_ID)-$(RELEASE_NAME)
 
 ITANGO_DOCKER_IMAGE = $(CAR_OCI_REGISTRY_HOST)/ska-tango-images-tango-itango:9.3.5
 
-PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=src:src/ska_low_cbf_fpga
+#PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=src:src/ska_low_cbf_fpga
+#PYTHON_VARS_AFTER_PYTEST = -m "not post_deployment"
 
-PYTHON_VARS_AFTER_PYTEST = -m "not post_deployment"
+HELM_CHARTS_TO_PUBLISH ?= ska-low-cbf-snmp
 
-HELM_CHARTS_TO_PUBLISH ?= event-generator tangosnmp
+#PYTHON_BUILD_TYPE = non_tag_setup
 
-PYTHON_BUILD_TYPE = non_tag_setup
+ifneq ($(CI_JOB_ID),)
+K8S_TEST_TANGO_IMAGE = --set ska-low-cbf-snmp.snmp.image.tag=$(VERSION)-dev.$(CI_COMMIT_SHORT_SHA) \
+	--set ska-low-cbf-snmp.snmp.image.registry=$(CI_REGISTRY)/ska-telescope/tangosnmp
+IMAGE_TO_TEST=$(CI_REGISTRY)/ska-telescope/tangosnmp/ska-low-cbf-snmp:$(VERSION)-dev.$(CI_COMMIT_SHORT_SHA)
+else
+K8S_TEST_TANGO_IMAGE = --set ska-low-cbf-snmp.snmp.image.tag=$(VERSION)
+endif
 
 K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
@@ -84,28 +95,23 @@ K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) \
 	--set ska-tango-base.xauthority=$(XAUTHORITY) \
 	--set ska-tango-base.jive.enabled=$(JIVE) \
 	--set webjive.enabled=$(WEBJIVE) \
-	--set tango_example.tango_example.image.tag=$(VERSION) \
-	--set event_generator.events_generator.image.tag=$(VERSION) \
+	${K8S_TEST_TANGO_IMAGE} \
 	--values gilab_values.yaml
 
-requirements: ## Install Dependencies
-	python3 -m pip install -r requirements-dev.txt
+#requirements: ## Install Dependencies
+#	python3 -m pip install -r requirements-dev.txt
 
 
-python-pre-lint: requirements## Overriding python.mk
-
-
-python-pre-test: requirements## Overriding python.mk
-	@mkdir -p build;
-
+#python-pre-lint: requirements## Overriding python.mk
+#
+#python-pre-test: requirements## Overriding python.mk
+#	@mkdir -p build;
+#
 #pipeline_unit_test: ## Run simulation mode unit tests in a docker container as in the gitlab pipeline
 #	@docker run --volume="$$(pwd):/home/tango/ska-low-cbf-fpga" \
 #		--env PYTHONPATH=src:src/ska_low_cbf_fpga --env FILE=$(FILE) -it $(ITANGO_DOCKER_IMAGE) \
 #		sh -c "cd /home/tango/ska-low-cbf-fpga && make requirements && make python-test"
 
-help: ## show this help.
-	@echo "make targets:"
-	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ": .*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 
-.PHONY: all test help k8s lint logs describe namespace delete_namespace kubeconfig kubectl_dependencies k8s_test install-chart uninstall-chart reinstall-chart upgrade-chart interactive
+#.PHONY: all test help k8s lint logs describe namespace delete_namespace kubeconfig kubectl_dependencies k8s_test install-chart uninstall-chart reinstall-chart upgrade-chart interactive

@@ -50,7 +50,7 @@ server:
 depends_on:
   - device: sys/database/2
 image:
-  registry: "{{.Values.cbf.image.registry}}"
-  image: "{{.Values.cbf.image.image}}"
-  tag: "{{.Values.cbf.image.tag}}"
-  pullPolicy: "{{.Values.cbf.image.pullPolicy}}"
+  registry: "{{.Values.snmp.image.registry}}"
+  image: "{{.Values.snmp.image.image}}"
+  tag: "{{.Values.snmp.image.tag}}"
+  pullPolicy: "{{.Values.snmp.image.pullPolicy}}"
