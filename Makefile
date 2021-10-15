@@ -56,10 +56,10 @@ $(shell echo 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH
 # ('make interactive', 'make test', etc.) are defined in this file.
 #
 include .make/release.mk
-#include .make/k8s.mk
+include .make/k8s.mk
 include .make/make.mk
 #include .make/python.mk
-#include .make/helm.mk
+include .make/helm.mk
 include .make/oci.mk
 include .make/help.mk
 #include .make/docs.mk
