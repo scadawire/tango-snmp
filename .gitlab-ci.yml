@@ -79,22 +79,22 @@ compile:
 # *********************************************
 # The ci badges are generated from the test results found in specified paths.
 # First we need to copy the test result files to the correct paths:
-move-test-artifacts:
-  stage: publish
-  tags:
-    - k8srunner
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  script:
-    - mkdir build/reports
-    - mv build/report.xml build/reports/unit-tests.xml
-    # fake files we don't actually generate in tangosnmp
-    - touch build/coverage.xml build/linting.xml
-    - mv build/coverage.xml build/reports/code-coverage.xml
-    - mv build/linting.xml build/reports/linting.xml
-    - cat build/reports/linting.xml
-  artifacts:
-    paths:
-      - build
+#move-test-artifacts:
+#  stage: publish
+#  tags:
+#    - k8srunner
+#  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+#  script:
+#    - mkdir build/reports
+#    - mv build/report.xml build/reports/unit-tests.xml
+#    # fake files we don't actually generate in tangosnmp
+#    - touch build/coverage.xml build/linting.xml
+#    - mv build/coverage.xml build/reports/code-coverage.xml
+#    - mv build/linting.xml build/reports/linting.xml
+#    - cat build/reports/linting.xml
+#  artifacts:
+#    paths:
+#      - build
 
 # Standardised included jobs
 include:
