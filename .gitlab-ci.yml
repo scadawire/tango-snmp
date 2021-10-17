@@ -8,7 +8,7 @@ variables:
     GIT_SUBMODULE_STRATEGY: normal
     IMAGE_NAME: tangosnmp-test
     DOCKER_DRIVER: overlay2
-    CHARTS_TO_PUBLISH: tangosnmp
+    CHARTS_TO_PUBLISH: ska-low-cbf-snmp
 
 stages:
     - pre-compile
@@ -49,32 +49,32 @@ compile:
         paths:
             - build
 
-test:
-  stage: test
-  tags:
-    - k8srunner
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  script:
-    - kubectl version
-    - make install-chart
-    - make wait
-    - make k8s-test
-  after_script:
-    - make uninstall-chart
-    - make delete-namespace
-    - mkdir -p build
-    - cp -rf charts/build/* build/
-    - ls -la build
-  environment:
-    name: test
-    kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - build
-    reports:
-      junit: build/report.xml
+#test:
+#  stage: test
+#  tags:
+#    - k8srunner
+#  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+#  script:
+#    - kubectl version
+#    - make install-chart
+#    - make wait
+#    - make k8s-test
+#  after_script:
+#    - make uninstall-chart
+#    - make delete-namespace
+#    - mkdir -p build
+#    - cp -rf charts/build/* build/
+#    - ls -la build
+#  environment:
+#    name: test
+#    kubernetes:
+#      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+#  artifacts:
+#    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+#    paths:
+#      - build
+#    reports:
+#      junit: build/report.xml
 
 # *********************************************
 # The ci badges are generated from the test results found in specified paths.
@@ -97,8 +97,6 @@ move-test-artifacts:
       - build
 
 # Standardised included jobs
-#variables: ### see variables at top of file.
-#  CHARTS_TO_PUBLISH: tangosnmp
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-s»
@@ -108,6 +106,8 @@ include:
 # OCI image
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/oci-image-build.gitlab-ci.yml'
+- project: 'ska-telescope/templates-repository'
+  file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
 
 
 # Create Gitlab CI badges from CI metrics
