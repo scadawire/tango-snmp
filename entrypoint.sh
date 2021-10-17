@@ -8,7 +8,7 @@
 #  set the SNMP_SIMULATOR variable to non-zero
 
 # this is a nasty hack, should be mounted as a volume or something.
-mkdir -p /home/tango/.snmp && ln -s /app/charts/tangosnmp/data/mibs /home/tango/.snmp/mibs
+mkdir -p /home/tango/.snmp && ln -s /app/charts/ska-low-cbf-snmp/data/mibs /home/tango/.snmp/mibs
 
 if [ "$1" = 'TangoSnmp' ]; then
     if [ -n "$SNMP_SIMULATOR" ] && [ "$SNMP_SIMULATOR" -ne 0 ]; then
