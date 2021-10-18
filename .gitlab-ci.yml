@@ -1,6 +1,6 @@
 # This file started as a mash-up between the SKA cpp-template and tango-example.
 
-image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
+image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
 
 variables:
     # Needed if you want automatic submodule checkout
@@ -8,9 +8,10 @@ variables:
     GIT_SUBMODULE_STRATEGY: normal
     IMAGE_NAME: tangosnmp-test
     DOCKER_DRIVER: overlay2
-    CHARTS_TO_PUBLISH: tangosnmp
+    CHARTS_TO_PUBLISH: ska-low-cbf-snmp
 
 stages:
+    - pre-compile
     - compile
     - build
     - lint
@@ -21,24 +22,23 @@ stages:
 # Update the "tangosnmp-builder" image which is used to compile the code.
 # This only needs to be done when tango-builder is updated,
 # or to use a newer version of libsnmp/g++.
-builder:
-    tags: 
-        - k8srunner
-    stage: compile
-    when: manual
-    script:
-        - cd docker
-        - export DOCKER_REGISTRY_USER=ska-docker
-        - export IMAGE=$DOCKER_REGISTRY_HOST/$DOCKER_REGISTRY_USER/tangosnmp-builder
-        - export VERSION=`date +"%Y-%m-%d"`
-        - docker build -t ${IMAGE}:${VERSION} . -f Dockerfile.build --build-arg DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST --build-arg DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER
-        - docker push ${IMAGE}:${VERSION}
-        - docker tag ${IMAGE}:${VERSION} ${IMAGE}:latest
-        - docker push ${IMAGE}:latest
+create builder OCI image:
+  stage: pre-compile
+  tags:
+    - k8srunner
+  image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - ./build_builder.sh
+  rules:
+    - changes:
+      - build_builder.sh
+      - Dockerfile.builder
 
 # compile C++ code, creating an executable that will later be packaged into a docker image
 compile:
-    image: nexus.engageska-portugal.pt/ska-docker/tangosnmp-builder
+    image: registry.gitlab.com/ska-telescope/tangosnmp/builder:0.0.1
     stage: compile
     script:
         - mkdir build
@@ -49,109 +49,66 @@ compile:
         paths:
             - build
 
-# build docker image
-build:
-  stage: build
-  tags:
-    - k8srunner
-  before_script:
-    - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
-  script:
-    - ls -la build/bin/TangoSnmp
-    - make build
-    - make push
-  artifacts:
-    when: always
-    paths:
-      - build
-
-lint-check-chart:
-  stage: lint
-  tags:
-    - k8srunner
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
-  script:
-    - make helm_dependencies
-    - make chart_lint
-  artifacts:
-    paths:
-      - build
-
-test:
-  stage: test
-  tags:
-    - k8srunner
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
-  script:
-    - kubectl version
-    - make install-chart
-    - make wait
-    - make smoketest
-    - make test
-  after_script:
-    - make uninstall-chart
-    - make delete_namespace
-    - mkdir -p build
-    - cp -rf charts/build/* build/
-    - ls -la build
-  environment:
-    name: test
-    kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - build
-    reports:
-      junit: build/report.xml
-
-pages:
-  stage: pages
-  tags:
-    - k8srunner
-  script:
-   - ls -la
-   - mkdir .public
-   # fake files we don't actually generate in tangosnmp
-   - touch build/coverage.xml
-   - cp build/coverage.xml .public
-   #- cp -r build/htmlcov/* .public
-   - mv .public public
-  when: always
-  allow_failure: true
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
+#test:
+#  stage: test
+#  tags:
+#    - k8srunner
+#  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+#  script:
+#    - kubectl version
+#    - make install-chart
+#    - make wait
+#    - make k8s-test
+#  after_script:
+#    - make uninstall-chart
+#    - make delete-namespace
+#    - mkdir -p build
+#    - cp -rf charts/build/* build/
+#    - ls -la build
+#  environment:
+#    name: test
+#    kubernetes:
+#      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+#  artifacts:
+#    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+#    paths:
+#      - build
+#    reports:
+#      junit: build/report.xml
 
 # *********************************************
 # The ci badges are generated from the test results found in specified paths.
 # First we need to copy the test result files to the correct paths:
-move-test-artifacts:
-  stage: publish
-  tags:
-    - k8srunner
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
-  script:
-    - mkdir build/reports
-    - mv build/report.xml build/reports/unit-tests.xml
-    # fake files we don't actually generate in tangosnmp
-    - touch build/coverage.xml build/linting.xml
-    - mv build/coverage.xml build/reports/code-coverage.xml
-    - mv build/linting.xml build/reports/linting.xml
-    - cat build/reports/linting.xml
-  artifacts:
-    paths:
-      - build
+#move-test-artifacts:
+#  stage: publish
+#  tags:
+#    - k8srunner
+#  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+#  script:
+#    - mkdir build/reports
+#    - mv build/report.xml build/reports/unit-tests.xml
+#    # fake files we don't actually generate in tangosnmp
+#    - touch build/coverage.xml build/linting.xml
+#    - mv build/coverage.xml build/reports/code-coverage.xml
+#    - mv build/linting.xml build/reports/linting.xml
+#    - cat build/reports/linting.xml
+#  artifacts:
+#    paths:
+#      - build
 
 # Standardised included jobs
-#variables: ### see variables at top of file.
-#  CHARTS_TO_PUBLISH: tangosnmp
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-s»
+#- project: 'ska-telescope/templates-repository'
+#  file: 'gitlab-ci/includes/helm_publish.yml'
+
+# OCI image
 - project: 'ska-telescope/templates-repository'
-  file: 'gitlab-ci/includes/helm_publish.yml'
+  file: 'gitlab-ci/includes/oci-image-build.gitlab-ci.yml'
+- project: 'ska-telescope/templates-repository'
+  file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
+
 
 # Create Gitlab CI badges from CI metrics
 # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci»

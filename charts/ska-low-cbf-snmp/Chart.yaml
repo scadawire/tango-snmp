@@ -1,6 +1,6 @@
 apiVersion: v2
-name: ska-low-cbf-snmp-test-parent
-description: Helm parent chart for TangoSnmp Device tests
+name: ska-low-cbf-snmp
+description: Helm chart for TangoSnmp Device testing
 type: application
 version: 0.0.3
 appVersion: 0.0.3
@@ -12,6 +12,5 @@ dependencies:
 - name: ska-tango-base
   version: 0.2.23
   repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-low-cbf-snmp
-  version: 0.0.2
-  repository: file://../ska-low-cbf-snmp
+  condition: ska-tango-base.enabled,global.sub-system.ska-tango-base.enabled
+

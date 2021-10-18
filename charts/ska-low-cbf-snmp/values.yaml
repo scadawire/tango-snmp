@@ -1,0 +1,58 @@
+enabled: true
+
+telescope: SKA-low
+system: SW-infrastructure
+subsystem: ska-low-cbf
+
+labels:
+  app: ska-low-cbf-snmp
+
+global:
+  minikube: true
+  tango_host: databaseds-tango-base-test:10000
+  tries: 10
+  sleep: 5
+
+dsconfig:
+  configuration_file: data/configuration.json
+  timeout: 300s
+  image:
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-dsconfig
+      tag: 1.5.1
+      pullPolicy: IfNotPresent
+
+itango:
+  image:
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-itango
+    tag: 9.3.5
+    pullPolicy: IfNotPresent
+
+
+# settings common to all tangosnmp device servers
+snmp:
+  image:
+    registry: artefact.skao.int
+    image: ska-low-cbf-snmp
+    tag: 0.0.2
+    pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+deviceServers:
+  tangosnmp:
+    instances: ["andrew"]
+    file: "data/tangosnmp.yaml"
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []
